@@ -1,0 +1,18 @@
+group 'com.clashsoft'
+version '0.1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+final String MAIN_CLASS = "com.clashsoft.stocksim.Main"
+
+jar.manifest.attributes('Main-Class': MAIN_CLASS)
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+}
