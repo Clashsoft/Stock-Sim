@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.MainViewController">
+	<items>
+		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+			</padding>
+			<children>
+				<Label text="Stocks" underline="true" VBox.vgrow="NEVER">
+					<font>
+						<Font size="18.0" />
+					</font>
+				</Label>
+				<TableView fx:id="stocksTable" VBox.vgrow="ALWAYS">
+					<columns>
+						<TableColumn fx:id="stockSymbolColumn" prefWidth="60.0" text="Symbol" />
+						<TableColumn fx:id="stockNameColumn" prefWidth="150.0" text="Name" />
+						<TableColumn fx:id="stockPriceColumn" prefWidth="60.0" text="Price" />
+						<TableColumn fx:id="stockAbsChangeColumn" prefWidth="60.0" text="Abs. +/-" />
+						<TableColumn fx:id="stockRelChangeColumn" prefWidth="60.0" text="Rel. +/-" />
+					</columns>
+				</TableView>
+			</children>
+		</VBox>
+		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+			</padding>
+			<children>
+				<Label text="Players" underline="true" VBox.vgrow="NEVER">
+					<font>
+						<Font size="18.0" />
+					</font>
+				</Label>
+				<TableView fx:id="playersTable" VBox.vgrow="ALWAYS">
+					<columns>
+						<TableColumn fx:id="playerNameColumn" prefWidth="150.0" text="Name" />
+						<TableColumn fx:id="playerNetWorthColumn" prefWidth="100.0" text="Net Worth" />
+						<TableColumn fx:id="playerAbsChangeColumn" prefWidth="60.0" text="Abs. +/-" />
+						<TableColumn fx:id="playerRelChangeColumn" prefWidth="60.0" text="Rel. +/-" />
+					</columns>
+				</TableView>
+			</children>
+		</VBox>
+	</items>
+</SplitPane>
