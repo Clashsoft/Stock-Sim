@@ -46,6 +46,7 @@ public class LocalPlayer implements Player
 		return this.name;
 	}
 
+	@Override
 	public List<Transaction> getTransactions()
 	{
 		return this.transactions;
@@ -58,35 +59,78 @@ public class LocalPlayer implements Player
 	}
 
 	@Override
+	public long getNetWorth()
+	{
+		final List<Transaction> transactions = this.getTransactions();
+		final long cash = this.getCash(transactions);
+		final long stocks = this.getStocksValue(transactions);
+		return cash + stocks;
+	}
+
+	@Override
 	public long getNetWorth(long time)
 	{
 		final List<Transaction> transactions = this.getTransactions(0, time);
-		final long cash = this.startCash + this.getCashChange(transactions);
-		final long stocks = this.getStocks(transactions).stream().mapToLong(s -> s.getValue(time)).sum();
+		final long cash = this.getCash(transactions);
+		final long stocks = this.getStocksValue(time, transactions);
 		return cash + stocks;
+	}
+
+	@Override
+	public long getCash()
+	{
+		return this.getCash(this.getTransactions());
 	}
 
 	@Override
 	public long getCash(long time)
 	{
-		return this.startCash + this.getCashChange(this.getTransactions(0, time));
+		return this.getCash(this.getTransactions(0, time));
 	}
 
-	private long getCashChange(List<Transaction> transactions)
+	private long getCash(List<Transaction> transactions)
 	{
-		long delta = 0;
+		long delta = this.startCash;
 		for (Transaction transaction : transactions)
 		{
 			if (this == transaction.getBuyer())
 			{
-				delta -= transaction.getPrice();
+				delta -= transaction.getTotalPrice();
 			}
 			else if (this == transaction.getSeller())
 			{
-				delta += transaction.getPrice();
+				delta += transaction.getTotalPrice();
 			}
 		}
 		return delta;
+	}
+
+	@Override
+	public long getStocksValue()
+	{
+		return this.getStocksValue(this.getTransactions());
+	}
+
+	@Override
+	public long getStocksValue(long time)
+	{
+		return this.getStocksValue(time, this.getTransactions(0, time));
+	}
+
+	private long getStocksValue(List<Transaction> transactions)
+	{
+		return this.getStocks(transactions).stream().mapToLong(StockAmount::getValue).sum();
+	}
+
+	private long getStocksValue(long time, List<Transaction> transactions)
+	{
+		return this.getStocks(transactions).stream().mapToLong(s -> s.getValue(time)).sum();
+	}
+
+	@Override
+	public List<StockAmount> getStocks()
+	{
+		return this.getStocks(this.getTransactions());
 	}
 
 	@Override

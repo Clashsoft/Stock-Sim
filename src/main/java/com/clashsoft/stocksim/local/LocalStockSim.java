@@ -53,6 +53,8 @@ public class LocalStockSim implements StockSim
 	{
 		this.transactions.add(transaction);
 
+		transaction.getStock().addTransaction(transaction);
+
 		final Player buyer = transaction.getBuyer();
 		if (buyer != null)
 		{
@@ -89,7 +91,7 @@ public class LocalStockSim implements StockSim
 	@Override
 	public Stock createStock(String name, String symbol, long amount, long price)
 	{
-		final LocalStock stock = new LocalStock(this, UUID.randomUUID(), name, symbol);
+		final LocalStock stock = new LocalStock(this, UUID.randomUUID(), name, symbol, amount);
 		final long marketCap = amount * price;
 		final Player player = this.createPlayer(name, marketCap);
 

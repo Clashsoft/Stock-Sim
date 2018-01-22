@@ -15,7 +15,25 @@ public interface Stock
 
 	String getSymbol();
 
-	long getValue(long time);
+	long getPrice();
+
+	long getPrice(long time);
+
+	long getSupply();
+
+	default long getMarketCap()
+	{
+		return this.getPrice() * this.getSupply();
+	}
+
+	default long getMarketCap(long time)
+	{
+		return this.getPrice(time) * this.getSupply();
+	}
+
+	List<Transaction> getTransactions();
 
 	List<Transaction> getTransactions(long start, long end);
+
+	void addTransaction(Transaction transaction);
 }

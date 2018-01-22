@@ -23,8 +23,13 @@ public class StockAmount
 		return this.amount;
 	}
 
+	public long getValue()
+	{
+		return this.amount * this.stock.getPrice();
+	}
+
 	public long getValue(long time)
 	{
-		return this.amount * this.stock.getValue(time);
+		return this.amount * this.stock.getPrice(time);
 	}
 }
