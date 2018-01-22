@@ -10,7 +10,7 @@ import java.util.*;
 
 public class LocalPlayer implements Player
 {
-	private final StockSim sim;
+	private final LocalStockSim sim;
 	private final UUID id;
 
 	private String name;
@@ -20,7 +20,7 @@ public class LocalPlayer implements Player
 	// for all t: this == t.buyer || this == t.seller
 	private final List<Transaction> transactions = new ArrayList<>();
 
-	public LocalPlayer(StockSim sim, UUID id, String name, long startCash)
+	public LocalPlayer(LocalStockSim sim, UUID id, String name, long startCash)
 	{
 		this.sim = sim;
 		this.id = id;
@@ -132,5 +132,11 @@ public class LocalPlayer implements Player
 			result.add(new StockAmount(entry.getKey(), amount));
 		}
 		return result;
+	}
+
+	@Override
+	public void addTransaction(Transaction transaction)
+	{
+		this.transactions.add(transaction);
 	}
 }

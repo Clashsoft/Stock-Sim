@@ -21,4 +21,6 @@ public interface Player
 	List<Transaction> getTransactions(long start, long end);
 
 	List<StockAmount> getStocks(long time);
+
+	void addTransaction(Transaction transaction);
 }
