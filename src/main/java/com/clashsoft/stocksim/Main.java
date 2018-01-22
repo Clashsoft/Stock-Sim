@@ -1,5 +1,7 @@
 package com.clashsoft.stocksim;
 
+import com.clashsoft.stocksim.local.LocalStockSim;
+import com.clashsoft.stocksim.ui.MainViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +18,15 @@ public class Main extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		final Parent root = FXMLLoader.load(Main.class.getResource("ui/MainView.fxml"));
+		final LocalStockSim stockSim = new LocalStockSim();
+
+		final FXMLLoader loader = new FXMLLoader(Main.class.getResource("ui/MainView.fxml"));
+		final Parent root = loader.load();
+
+		final MainViewController controller = loader.getController();
+
+		controller.setStockSim(stockSim);
+		controller.setStage(primaryStage);
 
 		primaryStage.setTitle("Stock Simulator");
 		primaryStage.setScene(new Scene(root));
