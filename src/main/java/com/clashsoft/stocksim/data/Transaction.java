@@ -12,17 +12,17 @@ public class Transaction
 	private final Stock stock;
 	private final long  amount;
 
-	private final long totalPrice;
+	private final long total;
 
 	private final Player seller;
 	private final Player buyer;
 
-	public Transaction(long time, Stock stock, long amount, long totalPrice, Player seller, Player buyer)
+	public Transaction(long time, Stock stock, long amount, long total, Player seller, Player buyer)
 	{
 		this.time = time;
 		this.stock = stock;
 		this.amount = amount;
-		this.totalPrice = totalPrice;
+		this.total = total;
 		this.seller = seller;
 		this.buyer = buyer;
 	}
@@ -47,9 +47,14 @@ public class Transaction
 		return new StockAmount(this.stock, this.amount);
 	}
 
-	public long getTotalPrice()
+	public long getPrice()
 	{
-		return this.totalPrice;
+		return this.total / this.amount;
+	}
+
+	public long getTotal()
+	{
+		return this.total;
 	}
 
 	public Player getSeller()

@@ -85,7 +85,7 @@ public class LocalStock implements Stock
 
 		for (Transaction transaction : transactions)
 		{
-			total += transaction.getTotalPrice();
+			total += transaction.getTotal();
 			amount += transaction.getAmount();
 		}
 

@@ -95,11 +95,11 @@ public class LocalPlayer implements Player
 		{
 			if (this == transaction.getBuyer())
 			{
-				delta -= transaction.getTotalPrice();
+				delta -= transaction.getTotal();
 			}
 			else if (this == transaction.getSeller())
 			{
-				delta += transaction.getTotalPrice();
+				delta += transaction.getTotal();
 			}
 		}
 		return delta;
