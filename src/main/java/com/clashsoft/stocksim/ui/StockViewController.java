@@ -1,13 +1,20 @@
 package com.clashsoft.stocksim.ui;
 
+import com.clashsoft.stocksim.Main;
 import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class StockViewController
 {
@@ -66,6 +73,27 @@ public class StockViewController
 		this.updateDisplay();
 	}
 
+	public static void open(Stock stock)
+	{
+		try
+		{
+			final FXMLLoader loader = new FXMLLoader(Main.class.getResource("ui/StockView.fxml"));
+			final Parent parent = loader.load();
+			final StockViewController controller = loader.getController();
+			final Stage stage = new Stage();
+
+			controller.setStock(stock);
+
+			stage.setScene(new Scene(parent));
+			stage.setTitle("Stock – " + stock.getName());
+			stage.show();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 	@FXML
 	public void initialize()
 	{
@@ -80,7 +108,7 @@ public class StockViewController
 	{
 		final StockSim stockSim = this.stock.getStockSim();
 		final long time = stockSim.getTime();
-		final long netWorth = this.stock.getValue(time);
+		final long netWorth = this.stock.getPrice(time);
 
 		this.displaySymbol(this.stock.getSymbol());
 		this.displayName(this.stock.getName());
@@ -94,7 +122,7 @@ public class StockViewController
 			startTime = 0;
 		}
 
-		final long oldNetWorth = this.stock.getValue(startTime);
+		final long oldNetWorth = this.stock.getPrice(startTime);
 		this.displayValueChange(netWorth, oldNetWorth);
 	}
 

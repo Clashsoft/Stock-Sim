@@ -1,15 +1,22 @@
 package com.clashsoft.stocksim.ui;
 
+import com.clashsoft.stocksim.Main;
 import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.StockSim;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class PlayerViewController
 {
@@ -71,6 +78,27 @@ public class PlayerViewController
 	{
 		this.player = player;
 		this.updateDisplay();
+	}
+
+	public static void open(Player player)
+	{
+		try
+		{
+			final FXMLLoader loader = new FXMLLoader(Main.class.getResource("ui/PlayerView.fxml"));
+			final Parent parent = loader.load();
+			final PlayerViewController controller = loader.getController();
+			final Stage stage = new Stage();
+
+			controller.setPlayer(player);
+
+			stage.setScene(new Scene(parent));
+			stage.setTitle("Player – " + player.getName());
+			stage.show();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

@@ -1,10 +1,16 @@
 package com.clashsoft.stocksim.ui;
 
+import com.clashsoft.stocksim.Main;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.ui.util.TextFields;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class CreateStockViewController
 {
@@ -49,6 +55,28 @@ public class CreateStockViewController
 	public void setStage(Stage stage)
 	{
 		this.stage = stage;
+	}
+
+	public static void open(StockSim sim)
+	{
+		try
+		{
+			final FXMLLoader loader = new FXMLLoader(Main.class.getResource("ui/CreateStockView.fxml"));
+			final Parent parent = loader.load();
+			final CreateStockViewController controller = loader.getController();
+			final Stage stage = new Stage();
+
+			controller.setStockSim(sim);
+			controller.setStage(stage);
+
+			stage.setScene(new Scene(parent));
+			stage.setTitle("Create New Stock");
+			stage.show();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
