@@ -2,12 +2,16 @@ package com.clashsoft.stocksim.data;
 
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
+import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.util.TimeTableCell;
 
 import java.util.List;
 import java.util.UUID;
 
 public class Transaction
 {
+	private static final UUID DEFAULT_UUID = new UUID(0, 0);
+
 	private final UUID id;
 	private final long time;
 
@@ -90,5 +94,32 @@ public class Transaction
 		}
 
 		return transactions.subList(startIndex, endIndex + 1);
+	}
+
+	public String toCSV()
+	{
+		return TimeTableCell.formatTime(this.time) + "," // time
+		       + this.id + "," // trx id
+		       + this.stock.getID() + "," // stock id
+		       + (this.seller == null ? DEFAULT_UUID : this.seller.getID()) + "," // seller id
+		       + (this.buyer == null ? DEFAULT_UUID : this.buyer.getID()) + "," // buyer id
+		       + this.amount + "," // amount
+		       + this.getPrice() + ","; // price in cent
+	}
+
+	public static Transaction parseCSV(StockSim sim, String csv)
+	{
+		final String[] array = csv.split(",");
+		int i = 0;
+
+		final long time = TimeTableCell.parseTime(array[i++]);
+		final UUID id = UUID.fromString(array[i++]);
+		final Stock stock = sim.getStock(UUID.fromString(array[i++]));
+		final Player seller = sim.getPlayer(UUID.fromString(array[i++]));
+		final Player buyer = sim.getPlayer(UUID.fromString(array[i++]));
+		final long amount = Long.parseLong(array[i++]);
+		final long price = Long.parseLong(array[i++]);
+
+		return new Transaction(id, time, stock, amount, price, seller, buyer);
 	}
 }

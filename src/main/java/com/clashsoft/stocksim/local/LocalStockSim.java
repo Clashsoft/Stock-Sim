@@ -6,6 +6,9 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +16,7 @@ import java.util.UUID;
 public class LocalStockSim implements StockSim
 {
 	private long time;
+
 	private List<Transaction> transactions = new ArrayList<>();
 	private List<Player>      players      = new ArrayList<>();
 	private List<Stock>       stocks       = new ArrayList<>();
@@ -150,5 +154,38 @@ public class LocalStockSim implements StockSim
 
 		this.addStock(stock);
 		return stock;
+	}
+
+	public void load(File data) throws IOException
+	{
+		this.players.clear();
+		this.stocks.clear();
+		this.transactions.clear();
+
+		final File players = new File(data, "players.csv");
+		final File stocks = new File(data, "stocks.csv");
+		final File transactions = new File(data, "transactions.csv");
+
+		Files.lines(players.toPath()).forEach(line -> this.addPlayer(LocalPlayer.parseCSV(this, line)));
+
+		Files.lines(stocks.toPath()).forEach(line -> this.addStock(LocalStock.parseCSV(this, line)));
+
+		Files.lines(transactions.toPath()).forEach(line -> this.addTransaction(Transaction.parseCSV(this, line)));
+	}
+
+	public void save(File data) throws IOException
+	{
+		data.mkdirs();
+
+		final File players = new File(data, "players.csv");
+		final File stocks = new File(data, "stocks.csv");
+		final File transactions = new File(data, "transactions.csv");
+
+		Files.write(players.toPath(), (Iterable<String>) this.players.stream().map(p -> (LocalPlayer) p)
+		                                                             .map(LocalPlayer::toCSV)::iterator);
+		Files.write(stocks.toPath(),
+		            (Iterable<String>) this.stocks.stream().map(p -> (LocalStock) p).map(LocalStock::toCSV)::iterator);
+		Files.write(transactions.toPath(),
+		            (Iterable<String>) this.transactions.stream().map(Transaction::toCSV)::iterator);
 	}
 }

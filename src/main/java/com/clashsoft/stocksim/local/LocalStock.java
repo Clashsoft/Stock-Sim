@@ -109,4 +109,22 @@ public class LocalStock implements Stock
 	{
 		this.transactions.add(transaction);
 	}
+
+	public String toCSV()
+	{
+		return this.id + "," + this.symbol + "," + this.name + "," + this.supply;
+	}
+
+	public static LocalStock parseCSV(LocalStockSim sim, String csv)
+	{
+		final String[] array = csv.split(",");
+		int i = 0;
+
+		final UUID id = UUID.fromString(array[i++]);
+		final String symbol = array[i++];
+		final String name = array[i++];
+		final long supply = Long.parseLong(array[i++]);
+
+		return new LocalStock(sim, id, name, symbol, supply);
+	}
 }

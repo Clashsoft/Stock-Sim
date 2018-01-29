@@ -183,4 +183,21 @@ public class LocalPlayer implements Player
 	{
 		this.transactions.add(transaction);
 	}
+
+	public String toCSV()
+	{
+		return this.id + "," + this.name + "," + this.startCash;
+	}
+
+	public static LocalPlayer parseCSV(LocalStockSim sim, String csv)
+	{
+		final String[] array = csv.split(",");
+		int i = 0;
+
+		final UUID id = UUID.fromString(array[i++]);
+		final String name = array[i++];
+		final long startCash = Long.parseLong(array[i++]);
+
+		return new LocalPlayer(sim, id, name, startCash);
+	}
 }
