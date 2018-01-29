@@ -4,10 +4,7 @@ import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
-import com.clashsoft.stocksim.ui.util.AmountTableCell;
-import com.clashsoft.stocksim.ui.util.PlayerTableCell;
-import com.clashsoft.stocksim.ui.util.PriceTableCell;
-import com.clashsoft.stocksim.ui.util.StockTableCell;
+import com.clashsoft.stocksim.ui.util.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -171,6 +168,7 @@ public class MainViewController
 		// Transaction Table Columns
 
 		this.transactionTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
+		this.transactionTimeColumn.setCellFactory(e -> new TimeTableCell<>());
 
 		// this.transactionIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 

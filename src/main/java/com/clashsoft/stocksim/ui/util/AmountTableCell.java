@@ -2,6 +2,8 @@ package com.clashsoft.stocksim.ui.util;
 
 import javafx.scene.control.TableCell;
 
+import java.util.Locale;
+
 public class AmountTableCell<S> extends TableCell<S, Long>
 {
 	@Override
@@ -13,6 +15,6 @@ public class AmountTableCell<S> extends TableCell<S, Long>
 			return;
 		}
 
-		this.setText(String.format("%,dd", item));
+		this.setText(String.format(Locale.ENGLISH, "%,d", item));
 	}
 }
