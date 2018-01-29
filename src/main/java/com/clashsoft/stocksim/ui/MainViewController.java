@@ -191,6 +191,13 @@ public class MainViewController
 		this.transactionTotalColumn.setCellFactory(e -> new PriceTableCell<>());
 	}
 
+	public void updateAll()
+	{
+		this.updateStocks();
+		this.updatePlayers();
+		this.updateTransactions();
+	}
+
 	@FXML
 	public void updateStocks()
 	{

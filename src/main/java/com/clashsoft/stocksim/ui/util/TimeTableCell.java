@@ -23,4 +23,9 @@ public class TimeTableCell<T> extends TableCell<T, Long>
 	{
 		return LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC).toString();
 	}
+
+	public static long parseTime(String text)
+	{
+		return LocalDateTime.parse(text).atOffset(ZoneOffset.UTC).toEpochSecond();
+	}
 }

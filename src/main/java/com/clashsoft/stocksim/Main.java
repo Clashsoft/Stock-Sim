@@ -8,6 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Main extends Application
 {
 	public static void main(String[] args)
@@ -30,6 +33,12 @@ public class Main extends Application
 
 		primaryStage.setTitle("Stock Simulator");
 		primaryStage.setScene(new Scene(root));
+
+		BackgroundThread bg = new BackgroundThread(stockSim, controller);
+
+		bg.start();
+
+		primaryStage.setOnCloseRequest(evt -> bg.onClose());
 
 		primaryStage.show();
 	}
