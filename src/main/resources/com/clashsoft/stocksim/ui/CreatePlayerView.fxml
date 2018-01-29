@@ -27,7 +27,7 @@
          <children>
             <TextField fx:id="initialCashDollarField" alignment="CENTER_RIGHT" text="1,000,000" HBox.hgrow="ALWAYS" />
             <Label alignment="BASELINE_CENTER" text="." HBox.hgrow="NEVER" />
-            <TextField fx:id="initialCashCentField" alignment="BASELINE_LEFT" maxWidth="36.0" text="00" HBox.hgrow="NEVER" />
+            <TextField fx:id="initialCashCentField" alignment="BASELINE_LEFT" focusTraversable="false" maxWidth="36.0" text="00" HBox.hgrow="NEVER" />
          </children>
       </HBox>
       <Label text="Initial Cash:" GridPane.rowIndex="1" />
