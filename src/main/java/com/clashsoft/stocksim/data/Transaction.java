@@ -4,27 +4,35 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Transaction
 {
+	private final UUID id;
 	private final long time;
 
 	private final Stock stock;
 	private final long  amount;
 
-	private final long total;
+	private final long price;
 
 	private final Player seller;
 	private final Player buyer;
 
-	public Transaction(long time, Stock stock, long amount, long total, Player seller, Player buyer)
+	public Transaction(UUID id, long time, Stock stock, long amount, long price, Player seller, Player buyer)
 	{
+		this.id = id;
 		this.time = time;
 		this.stock = stock;
 		this.amount = amount;
-		this.total = total;
+		this.price = price;
 		this.seller = seller;
 		this.buyer = buyer;
+	}
+
+	public UUID getID()
+	{
+		return this.id;
 	}
 
 	public long getTime()
@@ -49,12 +57,12 @@ public class Transaction
 
 	public long getPrice()
 	{
-		return this.total / this.amount;
+		return this.price;
 	}
 
 	public long getTotal()
 	{
-		return this.total;
+		return this.price * this.amount;
 	}
 
 	public Player getSeller()

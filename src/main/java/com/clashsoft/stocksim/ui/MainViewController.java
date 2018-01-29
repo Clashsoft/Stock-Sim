@@ -170,7 +170,7 @@ public class MainViewController
 		this.transactionTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
 		this.transactionTimeColumn.setCellFactory(e -> new TimeTableCell<>());
 
-		// this.transactionIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+		this.transactionIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 
 		this.transactionSellerColumn.setCellValueFactory(new PropertyValueFactory<>("seller"));
 		this.transactionSellerColumn.setCellFactory(e -> new PlayerTableCell<>());

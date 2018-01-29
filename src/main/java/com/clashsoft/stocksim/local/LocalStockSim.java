@@ -37,9 +37,61 @@ public class LocalStockSim implements StockSim
 	}
 
 	@Override
+	public Player getPlayer(String name)
+	{
+		for (Player player : this.players)
+		{
+			if (player.getName().equals(name))
+			{
+				return player;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Player getPlayer(UUID id)
+	{
+		for (Player player : this.players)
+		{
+			if (player.getID().equals(id))
+			{
+				return player;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public List<Stock> getStocks()
 	{
 		return this.stocks;
+	}
+
+	@Override
+	public Stock getStock(String symbol)
+	{
+		for (Stock stock : this.stocks)
+		{
+			if (stock.getSymbol().equals(symbol))
+			{
+				return stock;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Stock getStock(UUID id)
+	{
+		for (Stock stock : this.stocks)
+		{
+			if (stock.getID().equals(id))
+			{
+				return stock;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -92,10 +144,9 @@ public class LocalStockSim implements StockSim
 	public Stock createStock(String name, String symbol, long amount, long price)
 	{
 		final LocalStock stock = new LocalStock(this, UUID.randomUUID(), name, symbol, amount);
-		final long marketCap = amount * price;
-		final Player player = this.createPlayer(name, marketCap);
+		final Player player = this.createPlayer(name, amount * price);
 
-		this.addTransaction(new Transaction(this.time, stock, amount, marketCap, null, player));
+		this.addTransaction(new Transaction(UUID.randomUUID(), this.time, stock, amount, price, null, player));
 
 		this.addStock(stock);
 		return stock;

@@ -3,6 +3,7 @@ package com.clashsoft.stocksim.model;
 import com.clashsoft.stocksim.data.Transaction;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StockSim
 {
@@ -12,7 +13,15 @@ public interface StockSim
 
 	List<Player> getPlayers();
 
+	Player getPlayer(String name);
+
+	Player getPlayer(UUID id);
+
 	List<Stock> getStocks();
+
+	Stock getStock(String symbol);
+
+	Stock getStock(UUID id);
 
 	Leaderboard getLeaderboard();
 
