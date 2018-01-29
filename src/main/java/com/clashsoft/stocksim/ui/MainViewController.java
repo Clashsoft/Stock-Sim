@@ -224,5 +224,6 @@ public class MainViewController
 	@FXML
 	public void onAddTransactionAction()
 	{
+		CreateTransactionViewController.open(this.sim);
 	}
 }
