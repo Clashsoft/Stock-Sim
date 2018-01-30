@@ -10,8 +10,11 @@ import java.io.IOException;
 public class BackgroundThread extends Thread
 {
 	private static final File DATA_DIR = new File("data");
+
 	private final LocalStockSim      stockSim;
 	private final MainViewController controller;
+
+	private volatile boolean running = true;
 
 	public BackgroundThread(LocalStockSim stockSim, MainViewController controller)
 	{
@@ -24,20 +27,20 @@ public class BackgroundThread extends Thread
 	{
 		this.load();
 
-		try
+		while (this.running)
 		{
-			while (this.isAlive())
+			for (int i = 0; i < 5; i++)
 			{
-				for (int i = 0; i < 5; i++)
+				this.update();
+				try
 				{
-					this.update();
 					Thread.sleep(1000);
 				}
-				this.save();
+				catch (InterruptedException ignored)
+				{
+				}
 			}
-		}
-		catch (InterruptedException ignored)
-		{
+			this.save();
 		}
 
 		this.save();
@@ -81,6 +84,6 @@ public class BackgroundThread extends Thread
 	public void onClose()
 	{
 		System.out.println("Close requested");
-		this.interrupt();
+		this.running = false;
 	}
 }

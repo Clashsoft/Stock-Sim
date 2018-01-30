@@ -81,14 +81,20 @@ public class Transaction
 
 	public static List<Transaction> filter(List<Transaction> transactions, long start, long end)
 	{
+		final int size = transactions.size();
+		if (transactions.isEmpty())
+		{
+			return transactions;
+		}
+
 		int startIndex = 0;
-		while (transactions.get(startIndex).getTime() < start)
+		while (startIndex < size && transactions.get(startIndex).getTime() < start)
 		{
 			startIndex++;
 		}
 
 		int endIndex = transactions.size() - 1;
-		while (transactions.get(endIndex).getTime() > end)
+		while (endIndex >= 0 && transactions.get(endIndex).getTime() > end)
 		{
 			endIndex--;
 		}
