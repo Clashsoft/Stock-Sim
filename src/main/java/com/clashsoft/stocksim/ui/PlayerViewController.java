@@ -1,22 +1,24 @@
 package com.clashsoft.stocksim.ui;
 
 import com.clashsoft.stocksim.Main;
-import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.data.Period;
+import com.clashsoft.stocksim.data.StockAmount;
+import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.util.ShortDollarFormatter;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.PieChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class PlayerViewController
 {
@@ -41,7 +43,7 @@ public class PlayerViewController
 	public Label leaderboardChangeLabel;
 
 	@FXML
-	public ToggleGroup periodToggle;
+	public ToggleGroup  periodToggle;
 	@FXML
 	public ToggleButton hourToggleButton;
 	@FXML
@@ -54,9 +56,9 @@ public class PlayerViewController
 	public ToggleButton allTimeToggleButton;
 
 	@FXML
-	public LineChart netWorthChart;
+	public LineChart<Long, Long> netWorthChart;
 	@FXML
-	public PieChart  portfolioChart;
+	public PieChart              portfolioChart;
 
 	private Player player;
 
@@ -77,7 +79,7 @@ public class PlayerViewController
 	public void setPlayer(Player player)
 	{
 		this.player = player;
-		this.updateDisplay();
+		this.updateAll();
 	}
 
 	public static void open(Player player)
@@ -104,22 +106,33 @@ public class PlayerViewController
 	@FXML
 	public void initialize()
 	{
+		this.netWorthChart.getData().add(new XYChart.Series<>());
+		((NumberAxis) (Axis) this.netWorthChart.getYAxis()).setTickLabelFormatter(new ShortDollarFormatter());
+
 		this.hourToggleButton.setUserData(Period.HOUR);
 		this.dayToggleButton.setUserData(Period.DAY);
 		this.monthToggleButton.setUserData(Period.MONTH);
 		this.yearToggleButton.setUserData(Period.YEAR);
 		this.allTimeToggleButton.setUserData(Period.ALL_TIME);
 
-		this.periodToggle.selectedToggleProperty().addListener((ob, o, n) -> this.updateDisplay());
+		this.periodToggle.selectedToggleProperty().addListener((ob, o, n) -> this.updatePeriod());
 	}
 
-	public void updateDisplay()
+	public void updateAll()
+	{
+		this.displayName(this.player.getName());
+
+		this.updatePeriod();
+
+		this.updatePortfolio();
+	}
+
+	private void updatePeriod()
 	{
 		final StockSim stockSim = this.player.getStockSim();
 		final long time = stockSim.getTime();
-		final long netWorth = this.player.getNetWorth(time);
+		final long netWorth = this.player.getNetWorth();
 
-		this.displayName(this.player.getName());
 		this.displayNetWorth(netWorth);
 
 		final Period period = (Period) this.periodToggle.getSelectedToggle().getUserData();
@@ -139,6 +152,42 @@ public class PlayerViewController
 
 		this.displayLeaderboardPosition(position);
 		this.displayLeaderboardChange(position - oldPosition);
+
+		this.updateChart(startTime, time);
+	}
+
+	private void updateChart(long startTime, long endTime)
+	{
+		final List<XYChart.Series<Long, Long>> data = this.netWorthChart.getData();
+		final XYChart.Series<Long, Long> series = data.get(0);
+		final List<XYChart.Data<Long, Long>> seriesData = series.getData();
+
+		seriesData.clear();
+
+		for (int i = 0; i <= 10; i++)
+		{
+			final long time = startTime + (endTime - startTime) / 10 * i;
+			final long netWorth = this.player.getNetWorth(time);
+			seriesData.add(new XYChart.Data<>(time, netWorth));
+		}
+	}
+
+	private void updatePortfolio()
+	{
+		final List<PieChart.Data> data = this.portfolioChart.getData();
+		data.clear();
+
+		final List<StockAmount> stocks = this.player.getStocks();
+
+		final long total = stocks.stream().mapToLong(StockAmount::getValue).sum();
+
+		for (StockAmount amount : stocks)
+		{
+			final String symbol = amount.getStock().getSymbol();
+			final double value = (double) amount.getValue() / (double) total;
+			final PieChart.Data e = new PieChart.Data(symbol, value);
+			data.add(e);
+		}
 	}
 
 	public void displayName(String name)
@@ -149,7 +198,7 @@ public class PlayerViewController
 	public void displayNetWorth(long amount)
 	{
 		long dollars = amount / 100;
-		long cents = amount % 100;
+		long cents = Math.abs(amount % 100);
 
 		this.netWorthDollarLabel.setText(String.format("$ %,d", dollars));
 		this.netWorthCentLabel.setText(String.format(".%2d", cents));
@@ -193,7 +242,7 @@ public class PlayerViewController
 		}
 
 		long dollars = amount / 100;
-		long cents = amount % 100;
+		long cents = Math.abs(amount % 100);
 		this.absChangeDollarLabel.setText(String.format("%c $ %,d", sign, dollars));
 		this.absChangeCentLabel.setText(String.format(".%2d", cents));
 	}
