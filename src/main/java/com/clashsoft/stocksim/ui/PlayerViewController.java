@@ -109,6 +109,8 @@ public class PlayerViewController
 		this.monthToggleButton.setUserData(Period.MONTH);
 		this.yearToggleButton.setUserData(Period.YEAR);
 		this.allTimeToggleButton.setUserData(Period.ALL_TIME);
+
+		this.periodToggle.selectedToggleProperty().addListener((ob, o, n) -> this.updateDisplay());
 	}
 
 	public void updateDisplay()
