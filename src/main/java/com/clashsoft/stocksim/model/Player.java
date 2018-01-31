@@ -6,6 +6,7 @@ import com.clashsoft.stocksim.data.Transaction;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface Player
 {
@@ -37,5 +38,5 @@ public interface Player
 
 	void addTransaction(Transaction transaction);
 
-	Order makeOrder();
+	void makeOrder(Consumer<Order> orders);
 }

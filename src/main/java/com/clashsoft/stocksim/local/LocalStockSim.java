@@ -76,11 +76,7 @@ public class LocalStockSim implements StockSim
 		{
 			for (Player player : this.players)
 			{
-				final Order order = player.makeOrder();
-				if (order != null)
-				{
-					orders.add(order);
-				}
+				player.makeOrder(orders::add);
 			}
 		}
 		finally
@@ -134,16 +130,10 @@ public class LocalStockSim implements StockSim
 		List<Transaction> newTransactions)
 	{
 		// remove buy orders the player can't afford
-		buyOrders.removeIf(order -> order.getPlayer().getCash() < order.getTotal());
+		buyOrders.removeIf(this::isBuyExpired);
 
 		// remove sell orders where the player does not own enough of the stock
-		sellOrders.removeIf(order -> {
-			final Stock stock = order.getStock();
-			final List<StockAmount> stocks = order.getPlayer().getStocks();
-			final StockAmount amount = stocks.stream().filter(stockAmount -> stockAmount.getStock() == stock).findAny()
-			                                 .orElse(null);
-			return amount == null || amount.getAmount() < -order.getAmount();
-		});
+		sellOrders.removeIf(this::isSellExpired);
 
 		outer:
 		for (Iterator<Order> buyIterator = buyOrders.iterator(); buyIterator.hasNext(); )
@@ -192,6 +182,25 @@ public class LocalStockSim implements StockSim
 
 		newOrders.addAll(buyOrders);
 		newOrders.addAll(sellOrders);
+	}
+
+	private boolean isBuyExpired(Order order)
+	{
+		return this.time > order.getExpiry() || order.getPlayer().getCash() < order.getTotal();
+	}
+
+	private boolean isSellExpired(Order order)
+	{
+		if (this.time > order.getExpiry())
+		{
+			return true;
+		}
+
+		final Stock stock = order.getStock();
+		final List<StockAmount> stocks = order.getPlayer().getStocks();
+		final StockAmount amount = stocks.stream().filter(stockAmount -> stockAmount.getStock() == stock).findAny()
+		                                 .orElse(null);
+		return amount == null || amount.getAmount() < -order.getAmount();
 	}
 
 	@Override
@@ -376,7 +385,9 @@ public class LocalStockSim implements StockSim
 	public Stock createStock(String name, String symbol, long amount, long price)
 	{
 		final LocalStock stock = new LocalStock(this, UUID.randomUUID(), name, symbol, amount);
-		final Player player = new LocalPlayer(this, UUID.randomUUID(), name, amount * price, new CompanyStrategy());
+		final String playerName = "$" + symbol + " - " + name;
+		final Player player = new LocalPlayer(this, UUID.randomUUID(), playerName, amount * price,
+		                                      new CompanyStrategy());
 
 		this.addPlayer(player);
 		this.addStock(stock);

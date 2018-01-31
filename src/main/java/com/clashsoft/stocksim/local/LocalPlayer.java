@@ -9,6 +9,7 @@ import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.strategy.Strategy;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class LocalPlayer implements Player
 {
@@ -190,9 +191,12 @@ public class LocalPlayer implements Player
 	}
 
 	@Override
-	public Order makeOrder()
+	public void makeOrder(Consumer<Order> orders)
 	{
-		return this.strategy == null ? null : this.strategy.makeOrder(this.sim, this);
+		if (this.strategy != null)
+		{
+			this.strategy.makeOrder(this.sim, this, orders);
+		}
 	}
 
 	public String toCSV()
