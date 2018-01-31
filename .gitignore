@@ -1,10 +1,10 @@
-.idea/
-.gradle/
-build/
-temp/
-bin/
-out/
-data/
+/.idea/
+/.gradle/
+/build/
+/temp/
+/bin/
+/out/
+/data/
 
 # virtual machine crash logs
 hs_err_pid*
