@@ -1,5 +1,6 @@
 package com.clashsoft.stocksim.ui.util;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
@@ -36,5 +37,49 @@ public class TextFields
 				dollarField.requestFocus();
 			}
 		});
+	}
+
+	public static void displayAbsChange(long amount, Label dollarLabel, Label centLabel)
+	{
+		char sign;
+		if (amount < 0)
+		{
+			amount = -amount;
+			sign = '-';
+		}
+		else
+		{
+			sign = '+';
+		}
+
+		long dollars = amount / 100;
+		long cents = Math.abs(amount % 100);
+		dollarLabel.setText(String.format("%c $ %,d", sign, dollars));
+		centLabel.setText(String.format(".%02d", cents));
+	}
+
+	public static void displayRelChange(double amount, Label label)
+	{
+		char sign;
+		if (amount < 0)
+		{
+			amount = -amount;
+			sign = '-';
+		}
+		else
+		{
+			sign = '+';
+		}
+
+		label.setText(String.format("%c %.2f %%", sign, amount * 100));
+	}
+
+	public static void displayNetWorth(long amount, Label dollarLabel, Label centLabel)
+	{
+		long dollars = amount / 100;
+		long cents = Math.abs(amount % 100);
+
+		dollarLabel.setText(String.format("$ %,d", dollars));
+		centLabel.setText(String.format(".%02d", cents));
 	}
 }

@@ -6,7 +6,9 @@ import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.StockSim;
-import com.clashsoft.stocksim.ui.util.ShortDollarFormatter;
+import com.clashsoft.stocksim.ui.util.ShortDollarConverter;
+import com.clashsoft.stocksim.ui.util.TextFields;
+import com.clashsoft.stocksim.ui.util.TimeConverter;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -107,7 +109,8 @@ public class PlayerViewController
 	public void initialize()
 	{
 		this.netWorthChart.getData().add(new XYChart.Series<>());
-		((NumberAxis) (Axis) this.netWorthChart.getYAxis()).setTickLabelFormatter(new ShortDollarFormatter());
+		((NumberAxis) (Axis) this.netWorthChart.getXAxis()).setTickLabelFormatter(new TimeConverter());
+		((NumberAxis) (Axis) this.netWorthChart.getYAxis()).setTickLabelFormatter(new ShortDollarConverter());
 
 		this.hourToggleButton.setUserData(Period.HOUR);
 		this.dayToggleButton.setUserData(Period.DAY);
@@ -197,54 +200,15 @@ public class PlayerViewController
 
 	public void displayNetWorth(long amount)
 	{
-		long dollars = amount / 100;
-		long cents = Math.abs(amount % 100);
-
-		this.netWorthDollarLabel.setText(String.format("$ %,d", dollars));
-		this.netWorthCentLabel.setText(String.format(".%2d", cents));
+		TextFields.displayNetWorth(amount, this.netWorthDollarLabel, this.netWorthCentLabel);
 	}
 
 	private void displayNetWorthChange(long netWorth, long oldNetWorth)
 	{
-		this.displayAbsChange(netWorth - oldNetWorth);
+		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeDollarLabel, this.absChangeCentLabel);
 
 		final double relChange = (double) netWorth / (double) oldNetWorth - 1;
-		this.displayRelChange(relChange);
-	}
-
-	public void displayRelChange(double amount)
-	{
-		char sign;
-		if (amount < 0)
-		{
-			amount = -amount;
-			sign = '-';
-		}
-		else
-		{
-			sign = '+';
-		}
-
-		this.relChangeLabel.setText(String.format("%c %.2f %%", sign, amount * 100));
-	}
-
-	public void displayAbsChange(long amount)
-	{
-		char sign;
-		if (amount < 0)
-		{
-			amount = -amount;
-			sign = '-';
-		}
-		else
-		{
-			sign = '+';
-		}
-
-		long dollars = amount / 100;
-		long cents = Math.abs(amount % 100);
-		this.absChangeDollarLabel.setText(String.format("%c $ %,d", sign, dollars));
-		this.absChangeCentLabel.setText(String.format(".%2d", cents));
+		TextFields.displayRelChange(relChange, this.relChangeLabel);
 	}
 
 	public void displayLeaderboardPosition(long position)

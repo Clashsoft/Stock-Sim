@@ -15,6 +15,6 @@ public class PriceTableCell<S> extends TableCell<S, Long>
 			return;
 		}
 
-		this.setText(String.format(Locale.ENGLISH, "$ %,d.%02d", item / 100, item % 100));
+		this.setText(String.format(Locale.ENGLISH, "$ %,d.%02d", item / 100, Math.abs(item % 100)));
 	}
 }

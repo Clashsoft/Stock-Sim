@@ -4,17 +4,24 @@ import com.clashsoft.stocksim.Main;
 import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.util.ShortDollarConverter;
+import com.clashsoft.stocksim.ui.util.TextFields;
+import com.clashsoft.stocksim.ui.util.TimeConverter;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class StockViewController
 {
@@ -49,7 +56,7 @@ public class StockViewController
 	public ToggleButton allTimeToggleButton;
 
 	@FXML
-	public LineChart stockPriceChart;
+	public LineChart<Long, Long> stockPriceChart;
 
 	private Stock stock;
 
@@ -70,7 +77,7 @@ public class StockViewController
 	public void setStock(Stock stock)
 	{
 		this.stock = stock;
-		this.updateDisplay();
+		this.updateAll();
 	}
 
 	public static void open(Stock stock)
@@ -97,24 +104,34 @@ public class StockViewController
 	@FXML
 	public void initialize()
 	{
+		this.stockPriceChart.getData().add(new XYChart.Series<>());
+		((NumberAxis) (Axis) this.stockPriceChart.getXAxis()).setTickLabelFormatter(new TimeConverter());
+		((NumberAxis) (Axis) this.stockPriceChart.getYAxis()).setTickLabelFormatter(new ShortDollarConverter());
+
 		this.hourToggleButton.setUserData(Period.HOUR);
 		this.dayToggleButton.setUserData(Period.DAY);
 		this.monthToggleButton.setUserData(Period.MONTH);
 		this.yearToggleButton.setUserData(Period.YEAR);
 		this.allTimeToggleButton.setUserData(Period.ALL_TIME);
 
-		this.periodToggle.selectedToggleProperty().addListener((ob, o, n) -> this.updateDisplay());
+		this.periodToggle.selectedToggleProperty().addListener((ob, o, n) -> this.updatePeriod());
 	}
 
-	public void updateDisplay()
+	public void updateAll()
+	{
+		this.displaySymbol(this.stock.getSymbol());
+		this.displayName(this.stock.getName());
+
+		this.updatePeriod();
+	}
+
+	private void updatePeriod()
 	{
 		final StockSim stockSim = this.stock.getStockSim();
 		final long time = stockSim.getTime();
-		final long netWorth = this.stock.getPrice(time);
+		final long price = this.stock.getPrice();
 
-		this.displaySymbol(this.stock.getSymbol());
-		this.displayName(this.stock.getName());
-		this.displayNetWorth(netWorth);
+		this.displayPrice(price);
 
 		final Period period = (Period) this.periodToggle.getSelectedToggle().getUserData();
 
@@ -125,68 +142,47 @@ public class StockViewController
 		}
 
 		final long oldNetWorth = this.stock.getPrice(startTime);
-		this.displayValueChange(netWorth, oldNetWorth);
+		this.displayValueChange(price, oldNetWorth);
+
+		this.updateChart(startTime, time);
 	}
 
-	public void displaySymbol(String symbol)
+	private void displaySymbol(String symbol)
 	{
 		this.stockSymbolLabel.setText("$" + symbol);
 	}
 
-	public void displayName(String name)
+	private void displayName(String name)
 	{
 		this.stockNameLabel.setText(name);
 	}
 
-	public void displayNetWorth(long amount)
+	private void displayPrice(long amount)
 	{
-		long dollars = amount / 100;
-		long cents = amount % 100;
-
-		this.stockPriceDollarLabel.setText(String.format("$ %,d", dollars));
-		this.stockPriceCentLabel.setText(String.format(".%2d", cents));
+		TextFields.displayNetWorth(amount, this.stockPriceDollarLabel, this.stockPriceCentLabel);
 	}
 
 	private void displayValueChange(long netWorth, long oldNetWorth)
 	{
-		this.displayAbsChange(netWorth - oldNetWorth);
+		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeDollarLabel, this.absChangeCentLabel);
 
 		final double relChange = (double) netWorth / (double) oldNetWorth - 1;
-		this.displayRelChange(relChange);
+		TextFields.displayRelChange(relChange, this.relChangeLabel);
 	}
 
-	public void displayRelChange(double amount)
+	private void updateChart(long startTime, long endTime)
 	{
-		char sign;
-		if (amount < 0)
-		{
-			amount = -amount;
-			sign = '-';
-		}
-		else
-		{
-			sign = '+';
-		}
+		final List<XYChart.Series<Long, Long>> data = this.stockPriceChart.getData();
+		final XYChart.Series<Long, Long> series = data.get(0);
+		final List<XYChart.Data<Long, Long>> seriesData = series.getData();
 
-		this.relChangeLabel.setText(String.format("%c %.2f %%", sign, amount * 100));
-	}
+		seriesData.clear();
 
-	public void displayAbsChange(long amount)
-	{
-		char sign;
-		if (amount < 0)
+		for (int i = 0; i <= 10; i++)
 		{
-			amount = -amount;
-			sign = '-';
+			final long time = startTime + (endTime - startTime) / 10 * i;
+			final long price = this.stock.getPrice(time);
+			seriesData.add(new XYChart.Data<>(time, price));
 		}
-		else
-		{
-			sign = '+';
-		}
-
-		long dollars = amount / 100;
-		long cents = amount % 100;
-		this.absChangeDollarLabel.setText(String.format("%c $ %,d", sign, dollars));
-		this.absChangeCentLabel.setText(String.format(".%2d", cents));
 	}
 }

@@ -4,7 +4,7 @@ import javafx.util.StringConverter;
 
 import java.util.Locale;
 
-public class ShortDollarFormatter extends StringConverter<Number>
+public class ShortDollarConverter extends StringConverter<Number>
 {
 	@Override
 	public String toString(Number object)

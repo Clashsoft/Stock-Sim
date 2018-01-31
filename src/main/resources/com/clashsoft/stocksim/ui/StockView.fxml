@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
@@ -93,12 +92,12 @@
 		<Separator prefWidth="200.0" />
 		<HBox VBox.vgrow="ALWAYS">
 			<children>
-				<LineChart fx:id="stockPriceChart" legendSide="RIGHT" title="Stock Price">
+				<LineChart fx:id="stockPriceChart" legendSide="RIGHT" legendVisible="false" title="Stock Price">
 					<xAxis>
-						<CategoryAxis side="BOTTOM" />
+						<NumberAxis forceZeroInRange="false" side="BOTTOM" />
 					</xAxis>
 					<yAxis>
-						<NumberAxis side="LEFT" />
+						<NumberAxis forceZeroInRange="false" side="LEFT" />
 					</yAxis>
 				</LineChart>
 			</children>
