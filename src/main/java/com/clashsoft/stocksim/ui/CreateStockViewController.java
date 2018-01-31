@@ -71,6 +71,7 @@ public class CreateStockViewController
 
 			stage.setScene(new Scene(parent));
 			stage.setTitle("Create New Stock");
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		}
 		catch (IOException e)

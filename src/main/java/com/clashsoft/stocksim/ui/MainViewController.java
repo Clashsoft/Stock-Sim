@@ -202,18 +202,21 @@ public class MainViewController
 	public void updateStocks()
 	{
 		this.stocksTable.getItems().setAll(this.sim.getStocks());
+		this.stocksTable.sort();
 	}
 
 	@FXML
 	public void updatePlayers()
 	{
 		this.playersTable.getItems().setAll(this.sim.getPlayers());
+		this.playersTable.sort();
 	}
 
 	@FXML
 	public void updateTransactions()
 	{
 		this.transactionTable.getItems().setAll(this.sim.getTransactions());
+		this.transactionTable.sort();
 	}
 
 	@FXML

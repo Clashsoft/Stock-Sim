@@ -97,6 +97,7 @@ public class CreateTransactionViewController
 
 			stage.setScene(new Scene(parent));
 			stage.setTitle("Create New Transaction");
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		}
 		catch (IOException e)

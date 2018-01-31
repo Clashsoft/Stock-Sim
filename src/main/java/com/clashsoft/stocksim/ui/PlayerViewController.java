@@ -97,6 +97,7 @@ public class PlayerViewController
 
 			stage.setScene(new Scene(parent));
 			stage.setTitle("Player – " + player.getName());
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		}
 		catch (IOException e)

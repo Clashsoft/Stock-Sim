@@ -93,6 +93,7 @@ public class StockViewController
 
 			stage.setScene(new Scene(parent));
 			stage.setTitle("Stock – " + stock.getName());
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		}
 		catch (IOException e)

@@ -90,8 +90,6 @@
 			</VBox.margin>
 		</HBox>
 		<Separator prefWidth="200.0" />
-		<HBox VBox.vgrow="ALWAYS">
-			<children>
 				<LineChart fx:id="stockPriceChart" legendSide="RIGHT" legendVisible="false" title="Stock Price">
 					<xAxis>
 						<NumberAxis forceZeroInRange="false" side="BOTTOM" />
@@ -100,8 +98,6 @@
 						<NumberAxis forceZeroInRange="false" side="LEFT" />
 					</yAxis>
 				</LineChart>
-			</children>
-		</HBox>
 	</children>
 	<padding>
 		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

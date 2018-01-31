@@ -59,6 +59,7 @@ public class CreatePlayerViewController
 
 			stage.setScene(new Scene(parent));
 			stage.setTitle("Create New Player");
+			stage.setAlwaysOnTop(true);
 			stage.show();
 		}
 		catch (IOException e)
