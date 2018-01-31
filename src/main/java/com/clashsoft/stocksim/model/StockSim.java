@@ -1,5 +1,6 @@
 package com.clashsoft.stocksim.model;
 
+import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.Transaction;
 
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.UUID;
 public interface StockSim
 {
 	long getTime();
+
+	List<Order> getOrders();
 
 	List<Transaction> getTransactions();
 

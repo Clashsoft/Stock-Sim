@@ -9,7 +9,8 @@ import java.io.IOException;
 
 public class BackgroundThread extends Thread
 {
-	private static final File DATA_DIR = new File("data");
+	private static final File DATA_DIR      = new File("data");
+	private static final int  SAVE_INTERVAL = 10;
 
 	private final LocalStockSim      stockSim;
 	private final MainViewController controller;
@@ -29,7 +30,7 @@ public class BackgroundThread extends Thread
 
 		while (this.running)
 		{
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < SAVE_INTERVAL; i++)
 			{
 				this.update();
 				try
