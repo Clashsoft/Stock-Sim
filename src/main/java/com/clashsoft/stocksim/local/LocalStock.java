@@ -80,16 +80,7 @@ public class LocalStock implements Stock
 
 	private long getPrice(List<Transaction> transactions)
 	{
-		long total = 0L;
-		long amount = 0L;
-
-		for (Transaction transaction : transactions)
-		{
-			total += transaction.getTotal();
-			amount += transaction.getAmount();
-		}
-
-		return total / amount;
+		return transactions.isEmpty() ? 0L : transactions.get(transactions.size() - 1).getPrice();
 	}
 
 	@Override

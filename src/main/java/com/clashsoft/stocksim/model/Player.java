@@ -1,5 +1,6 @@
 package com.clashsoft.stocksim.model;
 
+import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.data.Transaction;
 
@@ -35,4 +36,6 @@ public interface Player
 	List<StockAmount> getStocks(long time);
 
 	void addTransaction(Transaction transaction);
+
+	Order makeOrder();
 }

@@ -1,31 +1,36 @@
 package com.clashsoft.stocksim.local;
 
-import com.clashsoft.stocksim.model.Player;
-import com.clashsoft.stocksim.model.Stock;
+import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.data.Transaction;
+import com.clashsoft.stocksim.model.Player;
+import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.strategy.Strategy;
 
 import java.util.*;
 
 public class LocalPlayer implements Player
 {
 	private final LocalStockSim sim;
-	private final UUID id;
+	private final UUID          id;
 
 	private String name;
 
 	private long startCash;
 
+	private Strategy strategy;
+
 	// for all t: this == t.buyer || this == t.seller
 	private final List<Transaction> transactions = new ArrayList<>();
 
-	public LocalPlayer(LocalStockSim sim, UUID id, String name, long startCash)
+	public LocalPlayer(LocalStockSim sim, UUID id, String name, long startCash, Strategy strategy)
 	{
 		this.sim = sim;
 		this.id = id;
 		this.name = name;
 		this.startCash = startCash;
+		this.strategy = strategy;
 	}
 
 	@Override
@@ -184,9 +189,19 @@ public class LocalPlayer implements Player
 		this.transactions.add(transaction);
 	}
 
+	@Override
+	public Order makeOrder()
+	{
+		return this.strategy == null ? null : this.strategy.makeOrder(this.sim, this);
+	}
+
 	public String toCSV()
 	{
-		return this.id + "," + this.name + "," + this.startCash;
+		return this.id + "," // id
+		       + this.name + "," // name
+		       + this.startCash + "," // start cash
+		       + (this.strategy == null ? "" : this.strategy.getClass().getSimpleName()) // strategy
+			;
 	}
 
 	public static LocalPlayer parseCSV(LocalStockSim sim, String csv)
@@ -197,7 +212,8 @@ public class LocalPlayer implements Player
 		final UUID id = UUID.fromString(array[i++]);
 		final String name = array[i++];
 		final long startCash = Long.parseLong(array[i++]);
+		final Strategy strategy = i < array.length ? Strategy.fromName(array[i++]) : null;
 
-		return new LocalPlayer(sim, id, name, startCash);
+		return new LocalPlayer(sim, id, name, startCash, strategy);
 	}
 }
