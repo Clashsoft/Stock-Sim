@@ -26,8 +26,9 @@ public class LocalLeaderboard implements Leaderboard
 	@Override
 	public long getPosition(Player player, long time)
 	{
-		List<Player> players = new ArrayList<>(this.stockSim.getPlayers());
-		players.sort(Comparator.comparingLong(it -> it.getNetWorth(time)));
-		return players.indexOf(player) + 1;
+		List<Long> players = new ArrayList<>();
+		this.stockSim.eachPlayer(player1 -> players.add(player1.getNetWorth(time)));
+		players.sort(((Comparator<Long>) Long::compareTo).reversed());
+		return players.indexOf(player.getNetWorth(time)) + 1;
 	}
 }

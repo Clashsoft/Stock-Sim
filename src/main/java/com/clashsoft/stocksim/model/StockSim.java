@@ -3,38 +3,44 @@ package com.clashsoft.stocksim.model;
 import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.Transaction;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface StockSim
 {
 	long getTime();
 
-	List<Order> getOrders();
+	void eachOrder(int n, Consumer<Order> action);
 
-	List<Transaction> getTransactions();
+	void eachTransaction(int n, Consumer<Transaction> action);
 
-	List<Player> getPlayers();
+	void addTransaction(Transaction transaction);
+
+	// Players
+
+	void eachPlayer(Consumer<Player> action);
 
 	Player getPlayer(String name);
 
 	Player getPlayer(UUID id);
 
-	List<Stock> getStocks();
+	void addPlayer(Player player);
+
+	Player createPlayer(String name, long cash);
+
+	// Stocks
+
+	void eachStock(Consumer<Stock> action);
 
 	Stock getStock(String symbol);
 
 	Stock getStock(UUID id);
 
-	Leaderboard getLeaderboard();
-
-	void addTransaction(Transaction transaction);
-
-	void addPlayer(Player player);
-
-	Player createPlayer(String name, long cash);
-
 	void addStock(Stock stock);
 
 	Stock createStock(String symbol, String name, long price, long amount);
+
+	// Leaderboard
+
+	Leaderboard getLeaderboard();
 }

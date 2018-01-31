@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LocalStockSim implements StockSim
@@ -35,13 +37,12 @@ public class LocalStockSim implements StockSim
 	private List<Order>       openOrders   = new ArrayList<>();
 	private Leaderboard       leaderboard  = new LocalLeaderboard(this);
 
-	@Override
-	public long getTime()
+	private void readLocked(Runnable runnable)
 	{
 		this.readLock.lock();
 		try
 		{
-			return this.time;
+			runnable.run();
 		}
 		finally
 		{
@@ -49,20 +50,46 @@ public class LocalStockSim implements StockSim
 		}
 	}
 
-	public void simulate()
+	private <T> T readLocked(Supplier<T> supplier)
 	{
-		final List<Order> orders = this.getNewOrders();
+		this.readLock.lock();
+		try
+		{
+			return supplier.get();
+		}
+		finally
+		{
+			this.readLock.unlock();
+		}
+	}
 
+	private void writeLocked(Runnable runnable)
+	{
 		this.writeLock.lock();
 		try
 		{
-			this.openOrders.addAll(orders);
-			this.time++;
+			runnable.run();
 		}
 		finally
 		{
 			this.writeLock.unlock();
 		}
+	}
+
+	@Override
+	public long getTime()
+	{
+		return this.readLocked(() -> this.time);
+	}
+
+	public void simulate()
+	{
+		final List<Order> orders = this.getNewOrders();
+
+		this.writeLocked(() -> {
+			this.openOrders.addAll(orders);
+			this.time++;
+		});
 
 		this.processOrders();
 	}
@@ -71,18 +98,12 @@ public class LocalStockSim implements StockSim
 	{
 		final List<Order> orders = new ArrayList<>(this.players.size());
 
-		this.readLock.lock();
-		try
-		{
+		this.readLocked(() -> {
 			for (Player player : this.players)
 			{
 				player.makeOrder(orders::add);
 			}
-		}
-		finally
-		{
-			this.readLock.unlock();
-		}
+		});
 		return orders;
 	}
 
@@ -204,29 +225,27 @@ public class LocalStockSim implements StockSim
 	}
 
 	@Override
-	public List<Order> getOrders()
+	public void eachOrder(int n, Consumer<Order> action)
 	{
-		return this.openOrders;
+		this.readLocked(() -> last(n, this.openOrders).forEach(action));
 	}
 
 	@Override
-	public List<Transaction> getTransactions()
+	public void eachTransaction(int n, Consumer<Transaction> action)
 	{
-		return this.transactions;
+		this.readLocked(() -> last(n, this.transactions).forEach(action));
 	}
 
 	@Override
-	public List<Player> getPlayers()
+	public void eachPlayer(Consumer<Player> action)
 	{
-		return this.players;
+		this.readLocked(() -> this.players.forEach(action));
 	}
 
 	@Override
 	public Player getPlayer(String name)
 	{
-		this.readLock.lock();
-		try
-		{
+		return this.readLocked(() -> {
 			for (Player player : this.players)
 			{
 				if (player.getName().equals(name))
@@ -235,19 +254,13 @@ public class LocalStockSim implements StockSim
 				}
 			}
 			return null;
-		}
-		finally
-		{
-			this.readLock.unlock();
-		}
+		});
 	}
 
 	@Override
 	public Player getPlayer(UUID id)
 	{
-		this.readLock.lock();
-		try
-		{
+		return this.readLocked(() -> {
 			for (Player player : this.players)
 			{
 				if (player.getID().equals(id))
@@ -256,25 +269,28 @@ public class LocalStockSim implements StockSim
 				}
 			}
 			return null;
-		}
-		finally
-		{
-			this.readLock.unlock();
-		}
+		});
 	}
 
 	@Override
-	public List<Stock> getStocks()
+	public void eachStock(Consumer<Stock> action)
 	{
-		return this.stocks;
+		this.readLocked(() -> this.stocks.forEach(action));
+	}
+
+	private static <T> List<T> last(int n, List<T> list)
+	{
+		if (n < 0)
+		{
+			return list;
+		}
+		return list.subList(Math.max(0, list.size() - n), list.size());
 	}
 
 	@Override
 	public Stock getStock(String symbol)
 	{
-		this.readLock.lock();
-		try
-		{
+		return this.readLocked(() -> {
 			for (Stock stock : this.stocks)
 			{
 				if (stock.getSymbol().equals(symbol))
@@ -283,19 +299,13 @@ public class LocalStockSim implements StockSim
 				}
 			}
 			return null;
-		}
-		finally
-		{
-			this.readLock.unlock();
-		}
+		});
 	}
 
 	@Override
 	public Stock getStock(UUID id)
 	{
-		this.readLock.lock();
-		try
-		{
+		return this.readLocked(() -> {
 			for (Stock stock : this.stocks)
 			{
 				if (stock.getID().equals(id))
@@ -304,11 +314,7 @@ public class LocalStockSim implements StockSim
 				}
 			}
 			return null;
-		}
-		finally
-		{
-			this.readLock.unlock();
-		}
+		});
 	}
 
 	@Override
@@ -320,9 +326,7 @@ public class LocalStockSim implements StockSim
 	@Override
 	public void addTransaction(Transaction transaction)
 	{
-		this.writeLock.lock();
-		try
-		{
+		this.writeLocked(() -> {
 			this.transactions.add(transaction);
 
 			transaction.getStock().addTransaction(transaction);
@@ -338,25 +342,13 @@ public class LocalStockSim implements StockSim
 			{
 				seller.addTransaction(transaction);
 			}
-		}
-		finally
-		{
-			this.writeLock.unlock();
-		}
+		});
 	}
 
 	@Override
 	public void addPlayer(Player player)
 	{
-		this.writeLock.lock();
-		try
-		{
-			this.players.add(player);
-		}
-		finally
-		{
-			this.writeLock.unlock();
-		}
+		this.writeLocked(() -> this.players.add(player));
 	}
 
 	@Override
@@ -370,15 +362,7 @@ public class LocalStockSim implements StockSim
 	@Override
 	public void addStock(Stock stock)
 	{
-		this.writeLock.lock();
-		try
-		{
-			this.stocks.add(stock);
-		}
-		finally
-		{
-			this.writeLock.unlock();
-		}
+		this.writeLocked(() -> this.stocks.add(stock));
 	}
 
 	@Override
@@ -437,7 +421,6 @@ public class LocalStockSim implements StockSim
 	public void save(File data) throws IOException
 	{
 		this.readLock.lock();
-
 		try
 		{
 			data.mkdirs();

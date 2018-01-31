@@ -7,9 +7,7 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class PlayerStrategy implements Strategy
@@ -27,9 +25,12 @@ public class PlayerStrategy implements Strategy
 		if (this.random.nextBoolean())
 		{
 			// buy order
+			final Stock stock = this.randomStock(sim);
+			if (stock == null)
+			{
+				return;
+			}
 
-			final List<Stock> stocks = sim.getStocks();
-			final Stock stock = stocks.get(this.random.nextInt(stocks.size()));
 			final double priceMultiplier = 0.8 + 0.25 * this.random.nextDouble();
 			final long price = (long) (stock.getPrice() * priceMultiplier);
 			final long amount = (long) (player.getCash() * this.random.nextDouble() / price);
@@ -68,4 +69,22 @@ public class PlayerStrategy implements Strategy
 			orders.accept(new Order(UUID.randomUUID(), time, time + Period.DAY.length, player, stock, -orderAmount, price));
 		}
 	}
+
+	private Stock randomStock(StockSim sim)
+	{
+		Map<Stock, Long> table = new HashMap<>();
+		sim.eachStock(stock -> table.put(stock, stock.getPrice() - stock.getPrice(sim.getTime() - 1)));
+
+		Map.Entry<Stock, Long> maxEntry = null;
+
+		for (Map.Entry<Stock, Long> entry : table.entrySet())
+		{
+			if (maxEntry == null || entry.getValue() > maxEntry.getValue())
+			{
+				maxEntry = entry;
+			}
+		}
+		return maxEntry == null ? null : maxEntry.getKey();
+	}
+
 }

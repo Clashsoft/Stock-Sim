@@ -14,10 +14,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MainViewController
 {
+	public static final int MAX_TRANSACTIONS = 100;
 
 	@FXML
 	private TableView<Stock> stocksTable;
@@ -201,21 +204,27 @@ public class MainViewController
 	@FXML
 	public void updateStocks()
 	{
-		this.stocksTable.getItems().setAll(this.sim.getStocks());
+		final List<Stock> stocks = new ArrayList<>();
+		this.sim.eachStock(stocks::add);
+		this.stocksTable.getItems().setAll(stocks);
 		this.stocksTable.sort();
 	}
 
 	@FXML
 	public void updatePlayers()
 	{
-		this.playersTable.getItems().setAll(this.sim.getPlayers());
+		final List<Player> players = new ArrayList<>();
+		this.sim.eachPlayer(players::add);
+		this.playersTable.getItems().setAll(players);
 		this.playersTable.sort();
 	}
 
 	@FXML
 	public void updateTransactions()
 	{
-		this.transactionTable.getItems().setAll(this.sim.getTransactions());
+		List<Transaction> transactions = new ArrayList<>(MAX_TRANSACTIONS);
+		this.sim.eachTransaction(MAX_TRANSACTIONS, transactions::add);
+		this.transactionTable.getItems().setAll(transactions);
 		this.transactionTable.sort();
 	}
 
