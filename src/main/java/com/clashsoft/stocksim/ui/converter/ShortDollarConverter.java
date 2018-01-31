@@ -1,4 +1,4 @@
-package com.clashsoft.stocksim.ui.util;
+package com.clashsoft.stocksim.ui.converter;
 
 import javafx.util.StringConverter;
 
@@ -20,7 +20,7 @@ public class ShortDollarConverter extends StringConverter<Number>
 		}
 		if (dollars < 1_000_000L)
 		{
-			return prefix + String.format(Locale.ENGLISH, "%,d", dollars / 1000L);
+			return prefix + String.format(Locale.ENGLISH, "%,dk", dollars / 1000L);
 		}
 		if (dollars < 1_000_000_000L)
 		{

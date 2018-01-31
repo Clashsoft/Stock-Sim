@@ -3,7 +3,7 @@ package com.clashsoft.stocksim.data;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
-import com.clashsoft.stocksim.ui.util.TimeTableCell;
+import com.clashsoft.stocksim.ui.converter.TimeConverter;
 
 import java.util.List;
 import java.util.UUID;
@@ -104,7 +104,7 @@ public class Transaction
 
 	public String toCSV()
 	{
-		return TimeTableCell.formatTime(this.time) + "," // time
+		return TimeConverter.format(this.time) + "," // time
 		       + this.id + "," // trx id
 		       + this.stock.getID() + "," // stock id
 		       + (this.seller == null ? DEFAULT_UUID : this.seller.getID()) + "," // seller id
@@ -118,7 +118,7 @@ public class Transaction
 		final String[] array = csv.split(",");
 		int i = 0;
 
-		final long time = TimeTableCell.parseTime(array[i++]);
+		final long time = TimeConverter.parse(array[i++]);
 		final UUID id = UUID.fromString(array[i++]);
 		final Stock stock = sim.getStock(UUID.fromString(array[i++]));
 		final Player seller = sim.getPlayer(UUID.fromString(array[i++]));

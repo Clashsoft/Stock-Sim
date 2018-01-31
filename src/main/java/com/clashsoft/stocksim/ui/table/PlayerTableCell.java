@@ -1,4 +1,4 @@
-package com.clashsoft.stocksim.ui.util;
+package com.clashsoft.stocksim.ui.table;
 
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.ui.PlayerViewController;

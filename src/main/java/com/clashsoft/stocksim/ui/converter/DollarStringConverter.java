@@ -1,4 +1,4 @@
-package com.clashsoft.stocksim.ui.util;
+package com.clashsoft.stocksim.ui.converter;
 
 import javafx.util.StringConverter;
 

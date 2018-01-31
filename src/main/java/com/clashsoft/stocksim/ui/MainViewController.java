@@ -4,7 +4,7 @@ import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
-import com.clashsoft.stocksim.ui.util.*;
+import com.clashsoft.stocksim.ui.table.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;

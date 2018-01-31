@@ -5,8 +5,8 @@ import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.converter.TimeConverter;
 import com.clashsoft.stocksim.ui.util.TextFields;
-import com.clashsoft.stocksim.ui.util.TimeTableCell;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -109,7 +109,7 @@ public class CreateTransactionViewController
 	public void initialize()
 	{
 		this.idLabel.setText(this.id.toString());
-		this.timestampLabel.setText(TimeTableCell.formatTime(this.time));
+		this.timestampLabel.setText(TimeConverter.format(this.time));
 
 		this.stockSymbolField.textProperty().addListener((ob, o, n) -> this.onStockSymbolChanged());
 

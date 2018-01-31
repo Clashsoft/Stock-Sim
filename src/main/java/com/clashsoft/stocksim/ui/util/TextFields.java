@@ -1,5 +1,7 @@
 package com.clashsoft.stocksim.ui.util;
 
+import com.clashsoft.stocksim.ui.converter.CentStringConverter;
+import com.clashsoft.stocksim.ui.converter.DollarStringConverter;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
