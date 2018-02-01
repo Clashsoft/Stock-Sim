@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.6666666666666666" orientation="VERTICAL" prefHeight="640.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.MainViewController">
+<SplitPane dividerPositions="0.6666666666666666" orientation="VERTICAL" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.MainViewController">
    <items>
       <SplitPane dividerPositions="0.5">
       	<items>
@@ -36,11 +36,11 @@
                   </BorderPane>
       				<TableView fx:id="stocksTable" VBox.vgrow="ALWAYS">
       					<columns>
-      						<TableColumn fx:id="stockSymbolColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="60.0" text="Symbol" />
-      						<TableColumn fx:id="stockNameColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="150.0" text="Name" />
-      						<TableColumn fx:id="stockPriceColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="60.0" text="Price" />
-      						<TableColumn fx:id="stockSupplyColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Supply" />
-      						<TableColumn fx:id="stockMarketCapColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" text="Market Cap." />
+      						<TableColumn fx:id="stockSymbolColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Symbol" />
+      						<TableColumn fx:id="stockNameColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Name" />
+      						<TableColumn fx:id="stockPriceColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Price" />
+      						<TableColumn fx:id="stockSupplyColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Supply" />
+      						<TableColumn fx:id="stockMarketCapColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" text="Market Cap." />
       					</columns>
       				</TableView>
       			</children>
@@ -67,10 +67,10 @@
                   </BorderPane>
       				<TableView fx:id="playersTable" VBox.vgrow="ALWAYS">
       					<columns>
-      						<TableColumn fx:id="playerNameColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="150.0" text="Name" />
-      						<TableColumn fx:id="playerNetWorthColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Net Worth" />
-      						<TableColumn fx:id="playerStocksValueColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Stocks Value" />
-      						<TableColumn fx:id="playerCashColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Cash" />
+      						<TableColumn fx:id="playerNameColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" text="Name" />
+      						<TableColumn fx:id="playerNetWorthColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" text="Net Worth" />
+      						<TableColumn fx:id="playerStocksValueColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" text="Stocks Value" />
+      						<TableColumn fx:id="playerCashColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" text="Cash" />
       					</columns>
       				</TableView>
       			</children>
@@ -96,7 +96,7 @@
             </BorderPane>
             <TableView fx:id="transactionTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
-                  <TableColumn fx:id="transactionTimeColumn" prefWidth="75.0" text="Time" />
+                  <TableColumn fx:id="transactionTimeColumn" prefWidth="75.0" sortType="DESCENDING" text="Time" />
                 <TableColumn fx:id="transactionIDColumn" prefWidth="109.0" text="Transaction ID" />
                 <TableColumn fx:id="transactionSellerColumn" prefWidth="76.0" text="Seller" />
                   <TableColumn fx:id="transactionBuyerColumn" prefWidth="75.0" text="Buyer" />

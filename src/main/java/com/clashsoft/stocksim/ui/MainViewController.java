@@ -117,6 +117,8 @@ public class MainViewController
 			return row;
 		});
 
+		this.stocksTable.getSortOrder().add(this.stockNameColumn);
+
 		// Stock Table Columns
 
 		this.stockSymbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
@@ -152,6 +154,8 @@ public class MainViewController
 			return row;
 		});
 
+		this.playersTable.getSortOrder().add(this.playerNameColumn);
+
 		// Player Table Columns
 
 		this.playerNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -168,6 +172,8 @@ public class MainViewController
 
 	private void initTransactionTable()
 	{
+		this.transactionTable.getSortOrder().add(this.transactionTimeColumn);
+
 		// Transaction Table Columns
 
 		this.transactionTimeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
