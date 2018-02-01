@@ -1,14 +1,15 @@
 package com.clashsoft.stocksim.local;
 
 import com.clashsoft.stocksim.data.Order;
-import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Player;
-import com.clashsoft.stocksim.model.Stock;
+import com.clashsoft.stocksim.model.Portfolio;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.strategy.Strategy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class LocalPlayer implements Player
@@ -25,12 +26,15 @@ public class LocalPlayer implements Player
 	// for all t: this == t.buyer || this == t.seller
 	private final List<Transaction> transactions = new ArrayList<>();
 
+	private LocalPortfolio portfolio;
+
 	public LocalPlayer(LocalStockSim sim, UUID id, String name, long startCash, Strategy strategy)
 	{
 		this.sim = sim;
 		this.id = id;
 		this.name = name;
 		this.startCash = startCash;
+		this.portfolio = new LocalPortfolio(this);
 		this.strategy = strategy;
 	}
 
@@ -52,6 +56,11 @@ public class LocalPlayer implements Player
 		return this.name;
 	}
 
+	public long getStartCash()
+	{
+		return this.startCash;
+	}
+
 	@Override
 	public List<Transaction> getTransactions()
 	{
@@ -65,129 +74,10 @@ public class LocalPlayer implements Player
 	}
 
 	@Override
-	public long getNetWorth()
-	{
-		final List<Transaction> transactions = this.getTransactions();
-		final long cash = this.getCash(transactions);
-		final long stocks = this.getStocksValue(transactions);
-		return cash + stocks;
-	}
-
-	@Override
-	public long getNetWorth(long time)
-	{
-		final List<Transaction> transactions = this.getTransactions(0, time);
-		final long cash = this.getCash(transactions);
-		final long stocks = this.getStocksValue(time, transactions);
-		return cash + stocks;
-	}
-
-	@Override
-	public long getCash()
-	{
-		return this.getCash(this.getTransactions());
-	}
-
-	@Override
-	public long getCash(long time)
-	{
-		return this.getCash(this.getTransactions(0, time));
-	}
-
-	private long getCash(List<Transaction> transactions)
-	{
-		long delta = this.startCash;
-		for (Transaction transaction : transactions)
-		{
-			if (this == transaction.getBuyer())
-			{
-				delta -= transaction.getTotal();
-			}
-			else if (this == transaction.getSeller())
-			{
-				delta += transaction.getTotal();
-			}
-		}
-		return delta;
-	}
-
-	@Override
-	public long getStocksValue()
-	{
-		return this.getStocksValue(this.getTransactions());
-	}
-
-	@Override
-	public long getStocksValue(long time)
-	{
-		return this.getStocksValue(time, this.getTransactions(0, time));
-	}
-
-	private long getStocksValue(List<Transaction> transactions)
-	{
-		return this.getStocks(transactions).stream().mapToLong(StockAmount::getValue).sum();
-	}
-
-	private long getStocksValue(long time, List<Transaction> transactions)
-	{
-		return this.getStocks(transactions).stream().mapToLong(s -> s.getValue(time)).sum();
-	}
-
-	@Override
-	public List<StockAmount> getStocks()
-	{
-		return this.getStocks(this.getTransactions());
-	}
-
-	@Override
-	public List<StockAmount> getStocks(long time)
-	{
-		return this.getStocks(this.getTransactions(0, time));
-	}
-
-	private List<StockAmount> getStocks(List<Transaction> transactions)
-	{
-		final Map<Stock, Long> amounts = new HashMap<>();
-
-		// replay transaction history
-		for (Transaction transaction : transactions)
-		{
-			long value = amounts.getOrDefault(transaction.getStock(), 0L);
-
-			if (this == transaction.getBuyer())
-			{
-				value += transaction.getAmount();
-			}
-			else if (this == transaction.getSeller())
-			{
-				value -= transaction.getAmount();
-			}
-
-			amounts.put(transaction.getStock(), value);
-		}
-
-		final List<StockAmount> result = new ArrayList<>();
-		for (Map.Entry<Stock, Long> entry : amounts.entrySet())
-		{
-			final Long value = entry.getValue();
-			if (value == null)
-			{
-				continue;
-			}
-			final long amount = value;
-			if (amount <= 0)
-			{
-				continue;
-			}
-			result.add(new StockAmount(entry.getKey(), amount));
-		}
-		return result;
-	}
-
-	@Override
 	public void addTransaction(Transaction transaction)
 	{
 		this.transactions.add(transaction);
+		this.portfolio.addTransaction(transaction);
 	}
 
 	@Override
@@ -197,6 +87,23 @@ public class LocalPlayer implements Player
 		{
 			this.strategy.makeOrder(this.sim, this, orders);
 		}
+	}
+
+	@Override
+	public Portfolio getPortfolio()
+	{
+		return this.portfolio;
+	}
+
+	@Override
+	public Portfolio getPortfolio(long time)
+	{
+		final LocalPortfolio portfolio = new LocalPortfolio(this);
+		for (Transaction trx : this.getTransactions(0, time))
+		{
+			portfolio.addTransaction(trx);
+		}
+		return portfolio;
 	}
 
 	public String toCSV()

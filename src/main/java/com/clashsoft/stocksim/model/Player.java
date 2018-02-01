@@ -16,25 +16,44 @@ public interface Player
 
 	String getName();
 
-	long getCash();
+	default long getCash()
+	{
+		return this.getPortfolio().getCash();
+	}
 
-	long getCash(long time);
+	default long getCash(long time)
+	{
+		return this.getPortfolio(time).getCash();
+	}
 
-	long getStocksValue();
+	default long getStocksValue()
+	{
+		return this.getPortfolio().getStockAmounts().stream().mapToLong(StockAmount::getValue).sum();
+	}
 
-	long getStocksValue(long time);
+	default long getStocksValue(long time)
+	{
+		return this.getPortfolio(time).getStocksValue(time);
+	}
 
-	long getNetWorth();
+	default long getNetWorth()
+	{
+		return this.getCash() + this.getStocksValue();
+	}
 
-	long getNetWorth(long time);
+	default long getNetWorth(long time)
+	{
+		final Portfolio portfolio = this.getPortfolio(time);
+		return portfolio.getCash() + portfolio.getStocksValue(time);
+	}
 
 	List<Transaction> getTransactions();
 
 	List<Transaction> getTransactions(long start, long end);
 
-	List<StockAmount> getStocks();
+	Portfolio getPortfolio();
 
-	List<StockAmount> getStocks(long time);
+	Portfolio getPortfolio(long time);
 
 	void addTransaction(Transaction transaction);
 

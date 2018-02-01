@@ -1,7 +1,6 @@
 package com.clashsoft.stocksim.local;
 
 import com.clashsoft.stocksim.data.Order;
-import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
@@ -218,10 +217,8 @@ public class LocalStockSim implements StockSim
 		}
 
 		final Stock stock = order.getStock();
-		final List<StockAmount> stocks = order.getPlayer().getStocks();
-		final StockAmount amount = stocks.stream().filter(stockAmount -> stockAmount.getStock() == stock).findAny()
-		                                 .orElse(null);
-		return amount == null || amount.getAmount() < -order.getAmount();
+		final long amount = order.getPlayer().getPortfolio().getStockAmount(stock);
+		return amount < -order.getAmount();
 	}
 
 	@Override

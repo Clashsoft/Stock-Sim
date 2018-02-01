@@ -25,7 +25,7 @@ public class PlayerStrategy implements Strategy
 		if (this.random.nextBoolean())
 		{
 			// buy order
-			final Stock stock = this.randomStock(sim);
+			final Stock stock = this.randomBuy(sim);
 			if (stock == null)
 			{
 				return;
@@ -47,20 +47,14 @@ public class PlayerStrategy implements Strategy
 		{
 			// sell order
 
-			final List<StockAmount> stocks = player.getStocks();
-			if (stocks.isEmpty())
+			final StockAmount stockAmount = this.randomSell(this.random, player);
+			if (stockAmount == null)
 			{
 				return;
 			}
 
-			final StockAmount stockAmount = stocks.get(this.random.nextInt(stocks.size()));
 			final Stock stock = stockAmount.getStock();
 			final long amount = stockAmount.getAmount();
-			if (amount <= 0)
-			{
-				return;
-			}
-
 			final double priceMultiplier = 0.9 + 0.25 * this.random.nextDouble();
 			final long price = (long) (stock.getPrice() * priceMultiplier);
 			final long orderAmount = this.random.nextLong() % amount;
@@ -70,7 +64,7 @@ public class PlayerStrategy implements Strategy
 		}
 	}
 
-	private Stock randomStock(StockSim sim)
+	private Stock randomBuy(StockSim sim)
 	{
 		Map<Stock, Long> table = new HashMap<>();
 		sim.eachStock(stock -> table.put(stock, stock.getPrice() - stock.getPrice(sim.getTime() - 1)));
@@ -87,4 +81,14 @@ public class PlayerStrategy implements Strategy
 		return maxEntry == null ? null : maxEntry.getKey();
 	}
 
+	private StockAmount randomSell(Random random, Player player)
+	{
+		final List<StockAmount> stockAmounts = new ArrayList<>(player.getPortfolio().getStockAmounts());
+		if (stockAmounts.isEmpty())
+		{
+			return null;
+		}
+
+		return stockAmounts.get(random.nextInt(stockAmounts.size()));
+	}
 }

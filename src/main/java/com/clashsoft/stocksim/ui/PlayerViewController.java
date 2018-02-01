@@ -7,8 +7,8 @@ import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.ui.converter.ShortDollarConverter;
-import com.clashsoft.stocksim.ui.util.TextFields;
 import com.clashsoft.stocksim.ui.converter.TimeConverter;
+import com.clashsoft.stocksim.ui.util.TextFields;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +17,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -181,15 +182,12 @@ public class PlayerViewController
 		final List<PieChart.Data> data = this.portfolioChart.getData();
 		data.clear();
 
-		final List<StockAmount> stocks = this.player.getStocks();
-
-		final long total = stocks.stream().mapToLong(StockAmount::getValue).sum();
-
-		for (StockAmount amount : stocks)
+		for (StockAmount amount : this.player.getPortfolio().getStockAmounts())
 		{
 			final String symbol = amount.getStock().getSymbol();
-			final double value = (double) amount.getValue() / (double) total;
+			final long value = amount.getValue();
 			final PieChart.Data e = new PieChart.Data(symbol, value);
+
 			data.add(e);
 		}
 	}
