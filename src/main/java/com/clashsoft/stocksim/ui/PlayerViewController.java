@@ -5,6 +5,7 @@ import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
+import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.ui.converter.ShortDollarConverter;
 import com.clashsoft.stocksim.ui.converter.TimeConverter;
@@ -23,6 +24,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 
+import static com.clashsoft.stocksim.ui.converter.PriceFormatter.formatAmount;
+import static com.clashsoft.stocksim.ui.converter.PriceFormatter.formatDollarCents;
+
 public class PlayerViewController
 {
 	@FXML
@@ -34,9 +38,7 @@ public class PlayerViewController
 	public Label netWorthCentLabel;
 
 	@FXML
-	public Label absChangeDollarLabel;
-	@FXML
-	public Label absChangeCentLabel;
+	public Label absChangeLabel;
 	@FXML
 	public Label relChangeLabel;
 
@@ -182,13 +184,20 @@ public class PlayerViewController
 		final List<PieChart.Data> data = this.portfolioChart.getData();
 		data.clear();
 
-		for (StockAmount amount : this.player.getPortfolio().getStockAmounts())
+		for (StockAmount sa : this.player.getPortfolio().getStockAmounts())
 		{
-			final String symbol = amount.getStock().getSymbol();
-			final long value = amount.getValue();
+			final Stock stock = sa.getStock();
+			final String symbol = stock.getSymbol();
+			final long value = sa.getValue();
 			final PieChart.Data e = new PieChart.Data(symbol, value);
 
 			data.add(e);
+
+			final Tooltip tooltip = new Tooltip();
+			final String tooltipText = formatAmount(sa.getAmount()) + " x " + formatDollarCents(stock.getPrice()) //
+			                           + "\n= " + formatDollarCents(value);
+			tooltip.setText(tooltipText);
+			Tooltip.install(e.getNode(), tooltip);
 		}
 	}
 
@@ -204,7 +213,7 @@ public class PlayerViewController
 
 	private void displayNetWorthChange(long netWorth, long oldNetWorth)
 	{
-		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeDollarLabel, this.absChangeCentLabel);
+		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeLabel);
 
 		final double relChange = (double) netWorth / (double) oldNetWorth - 1;
 		TextFields.displayRelChange(relChange, this.relChangeLabel);

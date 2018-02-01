@@ -2,6 +2,7 @@ package com.clashsoft.stocksim.ui.util;
 
 import com.clashsoft.stocksim.ui.converter.CentStringConverter;
 import com.clashsoft.stocksim.ui.converter.DollarStringConverter;
+import com.clashsoft.stocksim.ui.converter.PriceFormatter;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -41,23 +42,9 @@ public class TextFields
 		});
 	}
 
-	public static void displayAbsChange(long amount, Label dollarLabel, Label centLabel)
+	public static void displayAbsChange(long amount, Label label)
 	{
-		char sign;
-		if (amount < 0)
-		{
-			amount = -amount;
-			sign = '-';
-		}
-		else
-		{
-			sign = '+';
-		}
-
-		long dollars = amount / 100;
-		long cents = Math.abs(amount % 100);
-		dollarLabel.setText(String.format("%c $ %,d", sign, dollars));
-		centLabel.setText(String.format(".%02d", cents));
+		label.setText(PriceFormatter.formatChange(amount));
 	}
 
 	public static void displayRelChange(double amount, Label label)
@@ -78,8 +65,8 @@ public class TextFields
 
 	public static void displayNetWorth(long amount, Label dollarLabel, Label centLabel)
 	{
-		long dollars = amount / 100;
-		long cents = Math.abs(amount % 100);
+		long dollars = PriceFormatter.getDollars(amount);
+		long cents = PriceFormatter.getCents(amount);
 
 		dollarLabel.setText(String.format("$ %,d", dollars));
 		centLabel.setText(String.format(".%02d", cents));

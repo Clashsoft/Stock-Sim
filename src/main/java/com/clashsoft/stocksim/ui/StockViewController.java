@@ -36,9 +36,7 @@ public class StockViewController
 	public Label stockPriceCentLabel;
 
 	@FXML
-	public Label absChangeDollarLabel;
-	@FXML
-	public Label absChangeCentLabel;
+	public Label absChangeLabel;
 	@FXML
 	public Label relChangeLabel;
 
@@ -165,7 +163,7 @@ public class StockViewController
 
 	private void displayValueChange(long netWorth, long oldNetWorth)
 	{
-		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeDollarLabel, this.absChangeCentLabel);
+		TextFields.displayAbsChange(netWorth - oldNetWorth, this.absChangeLabel);
 
 		final double relChange = (double) netWorth / (double) oldNetWorth - 1;
 		TextFields.displayRelChange(relChange, this.relChangeLabel);

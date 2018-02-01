@@ -1,5 +1,6 @@
 package com.clashsoft.stocksim.ui.table;
 
+import com.clashsoft.stocksim.ui.converter.PriceFormatter;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -31,8 +32,7 @@ public class PriceTableCell<S> extends TableCell<S, Long>
 		}
 		else
 		{
-			final String value = String.format("%,d.%02d", price / 100, Math.abs(price % 100));
-			this.valueLabel.setText(value);
+			this.valueLabel.setText(PriceFormatter.formatPrice(price));
 			this.setGraphic(this.pane);
 		}
 	}
