@@ -2,6 +2,7 @@ package com.clashsoft.stocksim;
 
 import com.clashsoft.stocksim.local.LocalStockSim;
 import com.clashsoft.stocksim.ui.MainViewController;
+import com.clashsoft.stocksim.ui.SimulationControlViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,11 +37,12 @@ public class Main extends Application
 		bgThread.start();
 		simThread.start();
 
+		SimulationControlViewController.open(simThread);
+
 		primaryStage.setOnCloseRequest(evt -> {
 			simThread.onClose();
 			bgThread.onClose();
 		});
-
 
 		primaryStage.show();
 	}

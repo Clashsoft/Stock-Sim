@@ -7,6 +7,7 @@ public class SimulationThread extends Thread
 	private final LocalStockSim sim;
 
 	private volatile boolean running = true;
+	private volatile long stepsPerSecond;
 
 	public SimulationThread(LocalStockSim sim)
 	{
@@ -33,5 +34,11 @@ public class SimulationThread extends Thread
 	public void onClose()
 	{
 		this.running = false;
+	}
+
+	public void setStepsPerSecond(long stepsPerSecond)
+	{
+
+		this.stepsPerSecond = stepsPerSecond;
 	}
 }
