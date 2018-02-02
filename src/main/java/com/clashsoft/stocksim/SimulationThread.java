@@ -21,8 +21,19 @@ public class SimulationThread extends Thread
 		{
 			try
 			{
-				this.sim.simulate();
-				Thread.sleep(100);
+				final long start = System.currentTimeMillis();
+				final long stepsPerSecond = this.stepsPerSecond;
+				for (int i = 0; i < stepsPerSecond; i++)
+				{
+					this.sim.simulate();
+				}
+				final long end = System.currentTimeMillis();
+				final long sleep = 1000 - (end - start); // 1 second minus elapsed time
+
+				if (sleep > 0)
+				{
+					Thread.sleep(sleep);
+				}
 			}
 			catch (Exception ex)
 			{
