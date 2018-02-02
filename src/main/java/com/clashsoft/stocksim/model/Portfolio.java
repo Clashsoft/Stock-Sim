@@ -6,6 +6,8 @@ import java.util.Collection;
 
 public interface Portfolio
 {
+	Player getPlayer();
+
 	long getCash();
 
 	Collection<Stock> getStocks();

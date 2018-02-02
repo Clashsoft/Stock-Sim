@@ -3,6 +3,7 @@ package com.clashsoft.stocksim.ui;
 import com.clashsoft.stocksim.Main;
 import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.data.StockAmount;
+import com.clashsoft.stocksim.local.LocalPortfolio;
 import com.clashsoft.stocksim.model.Leaderboard;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
@@ -29,6 +30,7 @@ import static com.clashsoft.stocksim.ui.converter.PriceFormatter.formatDollarCen
 
 public class PlayerViewController
 {
+	private static final int NET_WORTH_CHART_COUNT = 20;
 	@FXML
 	public Label playerNameLabel;
 
@@ -168,14 +170,25 @@ public class PlayerViewController
 		final List<XYChart.Series<Long, Long>> data = this.netWorthChart.getData();
 		final XYChart.Series<Long, Long> series = data.get(0);
 		final List<XYChart.Data<Long, Long>> seriesData = series.getData();
-
-		seriesData.clear();
-
-		for (int i = 0; i <= 10; i++)
+		while (seriesData.size() <= NET_WORTH_CHART_COUNT)
 		{
-			final long time = startTime + (endTime - startTime) / 10 * i;
-			final long netWorth = this.player.getNetWorth(time);
-			seriesData.add(new XYChart.Data<>(time, netWorth));
+			seriesData.add(new XYChart.Data<>());
+		}
+
+		final LocalPortfolio portfolio = new LocalPortfolio(this.player.getPortfolio(startTime));
+
+		long lastTime = startTime;
+		for (int i = 0; i <= NET_WORTH_CHART_COUNT; i++)
+		{
+			final long time = startTime + (endTime - startTime) / NET_WORTH_CHART_COUNT * i;
+			this.player.getTransactions(lastTime, time).forEach(portfolio::addTransaction);
+			final long netWorth = portfolio.getNetWorth(time);
+
+			final XYChart.Data<Long, Long> elem = seriesData.get(i);
+			elem.setXValue(time);
+			elem.setYValue(netWorth);
+
+			lastTime = time;
 		}
 	}
 

@@ -94,7 +94,7 @@ public class Transaction
 		}
 
 		int endIndex = transactions.size() - 1;
-		while (endIndex >= 0 && transactions.get(endIndex).getTime() > end)
+		while (endIndex >= 0 && transactions.get(endIndex).getTime() >= end)
 		{
 			endIndex--;
 		}

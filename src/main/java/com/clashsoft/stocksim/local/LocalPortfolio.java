@@ -2,6 +2,7 @@ package com.clashsoft.stocksim.local;
 
 import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.data.Transaction;
+import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Portfolio;
 import com.clashsoft.stocksim.model.Stock;
 
@@ -12,16 +13,40 @@ import java.util.stream.Collectors;
 
 public class LocalPortfolio implements Portfolio
 {
-	private final LocalPlayer player;
+	private final Player player;
 
 	private long cash;
 
-	private Map<Stock, Long> stocks = new HashMap<>();
+	private Map<Stock, Long> stocks;
 
 	public LocalPortfolio(LocalPlayer player)
 	{
 		this.player = player;
 		this.cash = player.getStartCash();
+		this.stocks = new HashMap<>();
+	}
+
+	public LocalPortfolio(Portfolio portfolio)
+	{
+		if (portfolio instanceof LocalPortfolio)
+		{
+			final LocalPortfolio local = (LocalPortfolio) portfolio;
+			this.player = local.player;
+			this.cash = local.cash;
+			this.stocks = new HashMap<>(local.stocks);
+			return;
+		}
+
+		this.player = portfolio.getPlayer();
+		this.cash = portfolio.getCash();
+		this.stocks = new HashMap<>();
+		portfolio.getStockAmounts().forEach(amount -> this.stocks.put(amount.getStock(), amount.getValue()));
+	}
+
+	@Override
+	public Player getPlayer()
+	{
+		return this.player;
 	}
 
 	@Override
