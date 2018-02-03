@@ -7,7 +7,11 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class PlayerStrategy implements Strategy
@@ -17,78 +21,120 @@ public class PlayerStrategy implements Strategy
 	@Override
 	public void makeOrder(StockSim sim, Player player, Consumer<Order> orders)
 	{
-		if (this.random.nextFloat() >= 0.1)
+		if (!this.isActive(sim))
 		{
+			// ensures players only trade one second per minute
 			return;
 		}
 
 		if (this.random.nextBoolean())
 		{
-			// buy order
-			final Stock stock = this.randomBuy(sim);
-			if (stock == null)
-			{
-				return;
-			}
-
-			final double priceMultiplier = 0.8 + 0.25 * this.random.nextDouble();
-			final long price = (long) (stock.getPrice() * priceMultiplier);
-			final long amount = (long) (player.getCash() * this.random.nextDouble() / price);
-
-			if (amount <= 0)
-			{
-				return;
-			}
-
-			final long time = sim.getTime();
-			orders.accept(new Order(UUID.randomUUID(), time, time + Period.DAY.length, player, stock, amount, price));
+			this.makeBuyOrder(sim, player, orders);
 		}
 		else
 		{
-			// sell order
-
-			final StockAmount stockAmount = this.randomSell(this.random, player);
-			if (stockAmount == null)
-			{
-				return;
-			}
-
-			final Stock stock = stockAmount.getStock();
-			final long amount = stockAmount.getAmount();
-			final double priceMultiplier = 0.9 + 0.25 * this.random.nextDouble();
-			final long price = (long) (stock.getPrice() * priceMultiplier);
-			final long orderAmount = this.random.nextLong() % amount;
-
-			final long time = sim.getTime();
-			orders.accept(new Order(UUID.randomUUID(), time, time + Period.DAY.length, player, stock, -orderAmount, price));
+			this.makeSellOrder(sim, player, orders);
 		}
 	}
 
-	private Stock randomBuy(StockSim sim)
+	protected boolean isActive(StockSim sim)
 	{
-		Map<Stock, Long> table = new HashMap<>();
-		sim.eachStock(stock -> table.put(stock, stock.getPrice() - stock.getPrice(sim.getTime() - 1)));
-
-		Map.Entry<Stock, Long> maxEntry = null;
-
-		for (Map.Entry<Stock, Long> entry : table.entrySet())
-		{
-			if (maxEntry == null || entry.getValue() > maxEntry.getValue())
-			{
-				maxEntry = entry;
-			}
-		}
-		return maxEntry == null ? null : maxEntry.getKey();
+		return sim.getTime() % Period.MINUTE.length == 0;
 	}
 
-	private StockAmount randomSell(Random random, Player player)
+	protected long getExpiryDuration()
+	{
+		return Period.HOUR.length;
+	}
+
+	private void makeBuyOrder(StockSim sim, Player player, Consumer<Order> orders)
+	{
+		final Stock stock = this.randomBuy(sim, player);
+		if (stock == null)
+		{
+			return;
+		}
+
+		final double priceMultiplier = this.getBuyMultiplier();
+		final long price = Math.round(stock.getPrice() * priceMultiplier);
+		final long amount = Math.round(player.getCash() * this.random.nextDouble() / price);
+
+		if (amount <= 0)
+		{
+			return;
+		}
+
+		final long time = sim.getTime();
+		orders.accept(new Order(UUID.randomUUID(), time, time + this.getExpiryDuration(), player, stock, amount, price));
+	}
+
+	protected Stock randomBuy(StockSim sim, Player player)
+	{
+		final AtomicLong maxChange = new AtomicLong();
+		sim.eachStock(stock -> {
+			final long value = this.getPriceChange(stock);
+			if (value > maxChange.get())
+			{
+				maxChange.set(value);
+			}
+		});
+
+		final List<Stock> bestStocks = new ArrayList<>();
+		sim.eachStock(stock -> {
+			final long value = this.getPriceChange(stock);
+			if (value >= maxChange.get())
+			{
+				bestStocks.add(stock);
+			}
+		});
+		return this.random(bestStocks);
+	}
+
+	protected double getBuyMultiplier()
+	{
+		return 1.0 - 0.01 * this.random.nextDouble();
+	}
+
+	private void makeSellOrder(StockSim sim, Player player, Consumer<Order> orders)
+	{
+		final StockAmount stockAmount = this.randomSell(sim, player);
+		if (stockAmount == null)
+		{
+			return;
+		}
+
+		final Stock stock = stockAmount.getStock();
+		final long amount = stockAmount.getAmount();
+		final double priceMultiplier = this.getSellMultiplier();
+		final long price = Math.round(stock.getPrice() * priceMultiplier);
+		final long orderAmount = this.random.nextLong() % amount;
+
+		final long time = sim.getTime();
+		orders.accept(new Order(UUID.randomUUID(), time, time + this.getExpiryDuration(), player, stock, -orderAmount, price));
+	}
+
+	protected StockAmount randomSell(StockSim sim, Player player)
 	{
 		final List<StockAmount> stockAmounts = new ArrayList<>(player.getPortfolio().getStockAmounts());
 		if (stockAmounts.isEmpty())
 		{
 			return null;
 		}
+		return this.random(stockAmounts);
+	}
 
-		return stockAmounts.get(random.nextInt(stockAmounts.size()));
+	protected double getSellMultiplier()
+	{
+		return 1.0 + 0.01 * this.random.nextDouble();
+	}
+
+	private long getPriceChange(Stock stock)
+	{
+		return stock.getPrice() - stock.getPrice(stock.getStockSim().getTime() - 1);
+	}
+
+	protected <T> T random(List<T> stockAmounts)
+	{
+		return stockAmounts.get(this.random.nextInt(stockAmounts.size()));
 	}
 }

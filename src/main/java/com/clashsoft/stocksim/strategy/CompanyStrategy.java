@@ -1,26 +1,48 @@
 package com.clashsoft.stocksim.strategy;
 
-import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.Period;
 import com.clashsoft.stocksim.data.StockAmount;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
-import java.util.UUID;
-import java.util.function.Consumer;
-
-public class CompanyStrategy implements Strategy
+public class CompanyStrategy extends PlayerStrategy
 {
 	@Override
-	public void makeOrder(StockSim sim, Player player, Consumer<Order> orders)
+	protected Stock randomBuy(StockSim sim, Player player)
 	{
-		for (StockAmount amount : player.getPortfolio().getStockAmounts())
-		{
-			final Stock stock = amount.getStock();
-			final long time = sim.getTime();
-			final long expiry = time + 2 * Period.SECOND.length;
-			orders.accept(new Order(UUID.randomUUID(), time, expiry, player, stock, -amount.getAmount(), stock.getPrice()));
-		}
+		final String playerName = player.getName();
+		final String symbol = playerName.substring(1, playerName.indexOf(' '));
+		return sim.getStock(symbol);
+	}
+
+	@Override
+	protected StockAmount randomSell(StockSim sim, Player player)
+	{
+		return super.randomSell(sim, player);
+	}
+
+	@Override
+	protected boolean isActive(StockSim sim)
+	{
+		return true;
+	}
+
+	@Override
+	protected long getExpiryDuration()
+	{
+		return 2 * Period.SECOND.length;
+	}
+
+	@Override
+	protected double getBuyMultiplier()
+	{
+		return 1.0;
+	}
+
+	@Override
+	protected double getSellMultiplier()
+	{
+		return 1.0;
 	}
 }
