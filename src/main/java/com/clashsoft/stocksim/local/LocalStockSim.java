@@ -114,10 +114,10 @@ public class LocalStockSim implements StockSim
 		this.readLock.lock();
 		try
 		{
-			buyOrders = this.openOrders.stream().filter(e -> e.getAmount() > 0).sorted(Order.COMPARATOR)
+			buyOrders = this.openOrders.stream().filter(this::isValidBuyOrder).sorted(Order.COMPARATOR)
 			                           .collect(Collectors.toList());
 
-			sellOrders = this.openOrders.stream().filter(e -> e.getAmount() < 0).sorted(Order.COMPARATOR)
+			sellOrders = this.openOrders.stream().filter(this::isValidSellOrder).sorted(Order.COMPARATOR)
 			                            .collect(Collectors.toList());
 		}
 		finally
@@ -149,12 +149,6 @@ public class LocalStockSim implements StockSim
 	private void processOrders(List<Order> buyOrders, List<Order> sellOrders, List<Order> newOrders,
 		List<Transaction> newTransactions)
 	{
-		// remove buy orders the player can't afford
-		buyOrders.removeIf(this::isBuyExpired);
-
-		// remove sell orders where the player does not own enough of the stock
-		sellOrders.removeIf(this::isSellExpired);
-
 		outer:
 		for (Iterator<Order> buyIterator = buyOrders.iterator(); buyIterator.hasNext(); )
 		{
@@ -165,7 +159,6 @@ public class LocalStockSim implements StockSim
 			for (Iterator<Order> sellIterator = sellOrders.iterator(); sellIterator.hasNext(); )
 			{
 				final Order sellOrder = sellIterator.next();
-				long sellAmount = -sellOrder.getAmount();
 
 				if (stock != sellOrder.getStock())
 				{
@@ -176,6 +169,7 @@ public class LocalStockSim implements StockSim
 					continue;
 				}
 
+				final long sellAmount = -sellOrder.getAmount();
 				final long amount = Math.min(buyAmount, sellAmount);
 				final Transaction transaction = new Transaction(UUID.randomUUID(), this.time, stock, amount,
 				                                                sellOrder.getPrice(), sellOrder.getPlayer(),
@@ -204,21 +198,23 @@ public class LocalStockSim implements StockSim
 		newOrders.addAll(sellOrders);
 	}
 
-	private boolean isBuyExpired(Order order)
+	private boolean isValidBuyOrder(Order order)
 	{
-		return this.time > order.getExpiry() || order.getPlayer().getCash() < order.getTotal();
+		return order.getAmount() > 0 && this.time <= order.getExpiry() && order.getPlayer().getCash() >= order
+			                                                                                                 .getTotal();
 	}
 
-	private boolean isSellExpired(Order order)
+	private boolean isValidSellOrder(Order order)
 	{
-		if (this.time > order.getExpiry())
+		if (order.getAmount() > 0 || this.time > order.getExpiry())
 		{
-			return true;
+			return false;
 		}
 
 		final Stock stock = order.getStock();
-		final long amount = order.getPlayer().getPortfolio().getStockAmount(stock);
-		return amount < -order.getAmount();
+		final long ownedAmount = order.getPlayer().getPortfolio().getStockAmount(stock);
+		final long orderedAmount = -order.getAmount();
+		return ownedAmount >= orderedAmount;
 	}
 
 	@Override

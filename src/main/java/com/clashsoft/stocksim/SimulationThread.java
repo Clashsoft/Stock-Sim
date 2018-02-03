@@ -28,7 +28,9 @@ public class SimulationThread extends Thread
 					this.sim.simulate();
 				}
 				final long end = System.currentTimeMillis();
-				final long sleep = 1000 - (end - start); // 1 second minus elapsed time
+				final long elapsed = end - start;
+				System.out.println(stepsPerSecond + " Simulation Steps took " + elapsed + " ms");
+				final long sleep = 1000 - elapsed; // 1 second minus elapsed time
 
 				if (sleep > 0)
 				{
