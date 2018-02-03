@@ -68,16 +68,20 @@ public class SimulationControlViewController
 	}
 
 	@FXML
-	public void onPauseAction() {
+	public void onPauseAction()
+	{
 		this.speedSlider.setValue(-1);
-	}
-	@FXML
-	public void onSet1Action() {
-		this.speedSlider.setValue(0);
 	}
 
 	@FXML
-	public void onSetMaxAction() {
+	public void onSetDefaultAction()
+	{
+		this.speedSlider.setValue(2);
+	}
+
+	@FXML
+	public void onSetMaxAction()
+	{
 		this.speedSlider.setValue(this.speedSlider.getMax());
 	}
 }

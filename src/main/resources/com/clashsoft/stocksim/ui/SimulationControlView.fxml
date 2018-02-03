@@ -10,12 +10,12 @@
 <VBox spacing="5.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.SimulationControlViewController">
    <children>
       <Label text="Simulation Speed (Logarithmic):" />
-      <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="-1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-      <Label fx:id="infoLabel" text="= 1 Simulation Steps / Second" />
+      <Slider fx:id="speedSlider" blockIncrement="1.0" majorTickUnit="1.0" max="4.0" min="-1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="-1.0" />
+      <Label fx:id="infoLabel" text="= 0 Simulation Steps / Second" />
       <HBox spacing="5.0">
          <children>
             <Button mnemonicParsing="false" onAction="#onPauseAction" text="Pause" />
-            <Button mnemonicParsing="false" onAction="#onSet1Action" text="Set to 1" />
+            <Button mnemonicParsing="false" onAction="#onSetDefaultAction" text="Set to Default" />
             <Button mnemonicParsing="false" onAction="#onSetMaxAction" text="Set to Max" />
          </children>
       </HBox>
