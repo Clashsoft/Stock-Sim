@@ -3,6 +3,7 @@ package com.clashsoft.stocksim.data;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.converter.PriceFormatter;
 import com.clashsoft.stocksim.ui.converter.TimeConverter;
 
 import java.io.DataInput;
@@ -108,11 +109,10 @@ public class Order
 		       + TimeConverter.format(this.time) + "," // time
 		       + TimeConverter.format(this.expiry) + "," // expiry
 		       + this.id + "," // id
-		       + this.player.getID() + "," // player id
-		       + this.stock.getID() + "," // stock id
+		       + this.player.getName() + "," // player id
+		       + this.stock.getSymbol() + "," // stock id
 		       + this.amount + "," // amount
-		       + this.price + "," // price
-			;
+		       + PriceFormatter.formatPrice(this.price); // price
 	}
 
 	public void write(DataOutput output) throws IOException
@@ -132,12 +132,12 @@ public class Order
 		int i = 0;
 
 		final long time = TimeConverter.parse(array[i++]);
-		final long expiry = array[i].contains("T") ? TimeConverter.parse(array[i++]) : time + Period.DAY.length;
+		final long expiry = TimeConverter.parse(array[i++]);
 		final UUID id = UUID.fromString(array[i++]);
-		final Player player = sim.getPlayer(UUID.fromString(array[i++]));
-		final Stock stock = sim.getStock(UUID.fromString(array[i++]));
+		final Player player = sim.getPlayer(array[i++]);
+		final Stock stock = sim.getStock(array[i++]);
 		final long amount = Long.parseLong(array[i++]);
-		final long price = Long.parseLong(array[i++]);
+		final long price = PriceFormatter.parsePrice(array[i++]);
 
 		return new Order(id, time, expiry, player, stock, amount, price);
 	}

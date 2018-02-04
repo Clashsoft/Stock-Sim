@@ -6,6 +6,7 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Portfolio;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.strategy.Strategy;
+import com.clashsoft.stocksim.ui.converter.PriceFormatter;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -116,9 +117,8 @@ public class LocalPlayer implements Player
 	{
 		return this.id + "," // id
 		       + this.name + "," // name
-		       + this.startCash + "," // start cash
-		       + (this.strategy == null ? "" : this.strategy.getClass().getSimpleName()) // strategy
-			;
+		       + PriceFormatter.formatPrice(this.startCash) + "," // start cash
+		       + (this.strategy == null ? "" : this.strategy.getClass().getSimpleName()); // strategy
 	}
 
 	public void write(DataOutput output) throws IOException
@@ -136,8 +136,8 @@ public class LocalPlayer implements Player
 
 		final UUID id = UUID.fromString(array[i++]);
 		final String name = array[i++];
-		final long startCash = Long.parseLong(array[i++]);
-		final Strategy strategy = i < array.length ? Strategy.fromName(array[i++]) : null;
+		final long startCash = PriceFormatter.parsePrice(array[i++]);
+		final Strategy strategy = Strategy.fromName(array[i++]);
 
 		return new LocalPlayer(sim, id, name, startCash, strategy);
 	}

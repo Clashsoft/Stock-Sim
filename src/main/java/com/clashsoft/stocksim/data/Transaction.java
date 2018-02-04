@@ -3,6 +3,7 @@ package com.clashsoft.stocksim.data;
 import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
+import com.clashsoft.stocksim.ui.converter.PriceFormatter;
 import com.clashsoft.stocksim.ui.converter.TimeConverter;
 
 import java.io.DataInput;
@@ -112,11 +113,11 @@ public class Transaction
 	{
 		return TimeConverter.format(this.time) + "," // time
 		       + this.id + "," // trx id
-		       + this.stock.getID() + "," // stock id
-		       + (this.seller == null ? DEFAULT_UUID : this.seller.getID()) + "," // seller id
-		       + (this.buyer == null ? DEFAULT_UUID : this.buyer.getID()) + "," // buyer id
+		       + (this.seller == null ? "" : this.seller.getName()) + "," // seller id
+		       + (this.buyer == null ? "" : this.buyer.getName()) + "," // buyer id
+		       + this.stock.getSymbol() + "," // stock id
 		       + this.amount + "," // amount
-		       + this.getPrice() + ","; // price in cent
+		       + PriceFormatter.formatPrice(this.price); // price
 	}
 
 	public void write(DataOutput output) throws IOException
@@ -137,11 +138,11 @@ public class Transaction
 
 		final long time = TimeConverter.parse(array[i++]);
 		final UUID id = UUID.fromString(array[i++]);
-		final Stock stock = sim.getStock(UUID.fromString(array[i++]));
-		final Player seller = sim.getPlayer(UUID.fromString(array[i++]));
-		final Player buyer = sim.getPlayer(UUID.fromString(array[i++]));
+		final Player seller = sim.getPlayer(array[i++]);
+		final Player buyer = sim.getPlayer(array[i++]);
+		final Stock stock = sim.getStock(array[i++]);
 		final long amount = Long.parseLong(array[i++]);
-		final long price = Long.parseLong(array[i++]);
+		final long price = PriceFormatter.parsePrice(array[i++]);
 
 		return new Transaction(id, time, stock, amount, price, seller, buyer);
 	}
