@@ -7,10 +7,16 @@ import com.clashsoft.stocksim.model.Portfolio;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.strategy.Strategy;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static com.clashsoft.stocksim.persistence.Util.readUUID;
+import static com.clashsoft.stocksim.persistence.Util.writeUUID;
 
 public class LocalPlayer implements Player
 {
@@ -115,6 +121,14 @@ public class LocalPlayer implements Player
 			;
 	}
 
+	public void write(DataOutput output) throws IOException
+	{
+		writeUUID(output, this.id);
+		output.writeUTF(this.name);
+		output.writeLong(this.startCash);
+		Strategy.write(output, this.strategy);
+	}
+
 	public static LocalPlayer parseCSV(LocalStockSim sim, String csv)
 	{
 		final String[] array = csv.split(",");
@@ -124,6 +138,16 @@ public class LocalPlayer implements Player
 		final String name = array[i++];
 		final long startCash = Long.parseLong(array[i++]);
 		final Strategy strategy = i < array.length ? Strategy.fromName(array[i++]) : null;
+
+		return new LocalPlayer(sim, id, name, startCash, strategy);
+	}
+
+	public static LocalPlayer read(LocalStockSim sim, DataInput input) throws IOException
+	{
+		final UUID id = readUUID(input);
+		final String name = input.readUTF();
+		final long startCash = input.readLong();
+		final Strategy strategy = Strategy.read(input);
 
 		return new LocalPlayer(sim, id, name, startCash, strategy);
 	}

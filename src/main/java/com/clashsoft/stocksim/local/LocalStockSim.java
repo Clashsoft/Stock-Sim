@@ -11,14 +11,19 @@ import com.clashsoft.stocksim.strategy.PlayerStrategy;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static com.clashsoft.stocksim.persistence.Util.dataInput;
+import static com.clashsoft.stocksim.persistence.Util.dataOutput;
 
 public class LocalStockSim implements StockSim
 {
@@ -384,26 +389,47 @@ public class LocalStockSim implements StockSim
 			this.transactions.clear();
 			this.openOrders.clear();
 
-			final File info = new File(data, "sim.txt");
-			final File players = new File(data, "players.csv");
-			final File stocks = new File(data, "stocks.csv");
-			final File transactions = new File(data, "transactions.csv");
-			final File openOrders = new File(data, "open_orders.csv");
+			final File sim = new File(data, "sim.dat");
+			final File players = new File(data, "players.dat");
+			final File stocks = new File(data, "stocks.dat");
+			final File transactions = new File(data, "transactions.dat");
+			final File openOrders = new File(data, "open_orders.dat");
 
-			Files.lines(info.toPath()).forEach(line -> {
-				if (line.startsWith("time="))
+			dataInput(sim, input -> {
+				this.time = input.readLong();
+			});
+
+			dataInput(players, input -> {
+				final int n = input.readInt();
+				for (int i = 0; i < n; i++)
 				{
-					this.time = Long.parseLong(line.substring(5));
+					this.addPlayer(LocalPlayer.read(this, input));
 				}
 			});
 
-			Files.lines(players.toPath()).forEach(line -> this.addPlayer(LocalPlayer.parseCSV(this, line)));
+			dataInput(stocks, input -> {
+				final int n = input.readInt();
+				for (int i = 0; i < n; i++)
+				{
+					this.addStock(LocalStock.read(this, input));
+				}
+			});
 
-			Files.lines(stocks.toPath()).forEach(line -> this.addStock(LocalStock.parseCSV(this, line)));
+			dataInput(transactions, input -> {
+				final int n = input.readInt();
+				for (int i = 0; i < n; i++)
+				{
+					this.addTransaction(Transaction.read(this, input));
+				}
+			});
 
-			Files.lines(transactions.toPath()).forEach(line -> this.addTransaction(Transaction.parseCSV(this, line)));
-
-			Files.lines(openOrders.toPath()).forEach(line -> this.openOrders.add(Order.parseCSV(this, line)));
+			dataInput(openOrders, input -> {
+				final int n = input.readInt();
+				for (int i = 0; i < n; i++)
+				{
+					this.openOrders.add(Order.read(this, input));
+				}
+			});
 		}
 		finally
 		{
@@ -418,25 +444,47 @@ public class LocalStockSim implements StockSim
 		{
 			data.mkdirs();
 
-			final File sim = new File(data, "sim.txt");
-			final List<String> infoLines = Collections.singletonList("time=" + this.time);
-			Files.write(sim.toPath(), infoLines);
+			final File sim = new File(data, "sim.dat");
+			final File players = new File(data, "players.dat");
+			final File stocks = new File(data, "stocks.dat");
+			final File transactions = new File(data, "transactions.dat");
+			final File openOrders = new File(data, "open_orders.dat");
 
-			final File players = new File(data, "players.csv");
-			final File stocks = new File(data, "stocks.csv");
-			final File transactions = new File(data, "transactions.csv");
-			final File openOrders = new File(data, "open_orders.csv");
+			dataOutput(sim, output -> {
+				output.writeLong(this.time);
+			});
 
-			Files.write(players.toPath(), (Iterable<String>) this.players.stream().map(p -> (LocalPlayer) p)
-			                                                             .map(LocalPlayer::toCSV)::iterator);
+			dataOutput(players, output -> {
+				output.writeInt(this.players.size());
+				for (Player player : this.players)
+				{
+					((LocalPlayer) player).write(output);
+				}
+			});
 
-			Files.write(stocks.toPath(), (Iterable<String>) this.stocks.stream().map(p -> (LocalStock) p)
-			                                                           .map(LocalStock::toCSV)::iterator);
+			dataOutput(stocks, output -> {
+				output.writeInt(this.stocks.size());
+				for (Stock stock : this.stocks)
+				{
+					((LocalStock) stock).write(output);
+				}
+			});
 
-			Files.write(transactions.toPath(),
-			            (Iterable<String>) this.transactions.stream().map(Transaction::toCSV)::iterator);
+			dataOutput(transactions, output -> {
+				output.writeInt(this.transactions.size());
+				for (Transaction trx : this.transactions)
+				{
+					trx.write(output);
+				}
+			});
 
-			Files.write(openOrders.toPath(), (Iterable<String>) this.openOrders.stream().map(Order::toCSV)::iterator);
+			dataOutput(openOrders, output -> {
+				output.writeInt(this.openOrders.size());
+				for (Order order : this.openOrders)
+				{
+					order.write(output);
+				}
+			});
 		}
 		finally
 		{

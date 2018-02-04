@@ -5,8 +5,14 @@ import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.ui.converter.TimeConverter;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
+import static com.clashsoft.stocksim.persistence.Util.readUUID;
+import static com.clashsoft.stocksim.persistence.Util.writeUUID;
 
 public class Transaction
 {
@@ -113,6 +119,17 @@ public class Transaction
 		       + this.getPrice() + ","; // price in cent
 	}
 
+	public void write(DataOutput output) throws IOException
+	{
+		writeUUID(output, this.id);
+		output.writeLong(this.time);
+		writeUUID(output, this.seller == null ? DEFAULT_UUID : this.seller.getID());
+		writeUUID(output, this.buyer == null ? DEFAULT_UUID : this.buyer.getID());
+		writeUUID(output, this.stock.getID());
+		output.writeLong(this.amount);
+		output.writeLong(this.price);
+	}
+
 	public static Transaction parseCSV(StockSim sim, String csv)
 	{
 		final String[] array = csv.split(",");
@@ -125,6 +142,19 @@ public class Transaction
 		final Player buyer = sim.getPlayer(UUID.fromString(array[i++]));
 		final long amount = Long.parseLong(array[i++]);
 		final long price = Long.parseLong(array[i++]);
+
+		return new Transaction(id, time, stock, amount, price, seller, buyer);
+	}
+
+	public static Transaction read(StockSim sim, DataInput input) throws IOException
+	{
+		final UUID id = readUUID(input);
+		final long time = input.readLong();
+		final Player seller = sim.getPlayer(readUUID(input));
+		final Player buyer = sim.getPlayer(readUUID(input));
+		final Stock stock = sim.getStock(readUUID(input));
+		final long amount = input.readLong();
+		final long price = input.readLong();
 
 		return new Transaction(id, time, stock, amount, price, seller, buyer);
 	}

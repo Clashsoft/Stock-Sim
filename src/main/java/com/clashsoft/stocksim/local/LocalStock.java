@@ -4,9 +4,15 @@ import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.clashsoft.stocksim.persistence.Util.readUUID;
+import static com.clashsoft.stocksim.persistence.Util.writeUUID;
 
 public class LocalStock implements Stock
 {
@@ -106,6 +112,14 @@ public class LocalStock implements Stock
 		return this.id + "," + this.symbol + "," + this.name + "," + this.supply;
 	}
 
+	public void write(DataOutput output) throws IOException
+	{
+		writeUUID(output, this.id);
+		output.writeUTF(this.symbol);
+		output.writeUTF(this.name);
+		output.writeLong(this.supply);
+	}
+
 	public static LocalStock parseCSV(LocalStockSim sim, String csv)
 	{
 		final String[] array = csv.split(",");
@@ -115,6 +129,16 @@ public class LocalStock implements Stock
 		final String symbol = array[i++];
 		final String name = array[i++];
 		final long supply = Long.parseLong(array[i++]);
+
+		return new LocalStock(sim, id, name, symbol, supply);
+	}
+
+	public static LocalStock read(LocalStockSim sim, DataInput input) throws IOException
+	{
+		final UUID id = readUUID(input);
+		final String symbol = input.readUTF();
+		final String name = input.readUTF();
+		final long supply = input.readLong();
 
 		return new LocalStock(sim, id, name, symbol, supply);
 	}

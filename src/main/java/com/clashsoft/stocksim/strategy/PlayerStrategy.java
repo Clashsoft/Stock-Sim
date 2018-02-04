@@ -7,6 +7,8 @@ import com.clashsoft.stocksim.model.Player;
 import com.clashsoft.stocksim.model.Stock;
 import com.clashsoft.stocksim.model.StockSim;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -136,5 +138,17 @@ public class PlayerStrategy implements Strategy
 	protected <T> T random(List<T> stockAmounts)
 	{
 		return stockAmounts.get(this.random.nextInt(stockAmounts.size()));
+	}
+
+	// Persistence
+
+	@Override
+	public void writeData(DataOutput output)
+	{
+	}
+
+	@Override
+	public void readData(DataInput input)
+	{
 	}
 }
