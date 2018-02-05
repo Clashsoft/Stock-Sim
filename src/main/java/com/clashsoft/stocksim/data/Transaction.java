@@ -88,25 +88,49 @@ public class Transaction
 
 	public static List<Transaction> filter(List<Transaction> transactions, long start, long end)
 	{
-		final int size = transactions.size();
 		if (transactions.isEmpty())
 		{
 			return transactions;
 		}
 
-		int startIndex = 0;
-		while (startIndex < size && transactions.get(startIndex).getTime() < start)
-		{
-			startIndex++;
-		}
+		final int startIndex = indexOf(transactions, start);
+		final int endIndex = indexOf(transactions, end);
 
-		int endIndex = transactions.size() - 1;
-		while (endIndex >= 0 && transactions.get(endIndex).getTime() >= end)
-		{
-			endIndex--;
-		}
+		final List<Transaction> result = transactions.subList(startIndex, endIndex);
 
-		return transactions.subList(startIndex, endIndex + 1);
+		// assert result.stream().allMatch(t -> t.getTime() >= start && t.getTime() < end);
+		// assert startIndex == 0 || transactions.get(startIndex - 1).getTime() < start;
+		// assert endIndex == transactions.size() || transactions.get(endIndex).getTime() >= end;
+
+		return result;
+	}
+
+	private static int indexOf(List<Transaction> transactions, long start)
+	{
+		// adapted from Arrays.binarySearch
+
+		int low = 0;
+		int high = transactions.size() - 1;
+
+		while (low <= high)
+		{
+			final int mid = (low + high) >>> 1;
+			final long midVal = transactions.get(mid).getTime();
+
+			if (midVal < start)
+			{
+				low = mid + 1;
+			}
+			else if (midVal > 0)
+			{
+				high = mid - 1;
+			}
+			else
+			{
+				return mid; // key found
+			}
+		}
+		return low; // key not found.
 	}
 
 	public String toCSV()
