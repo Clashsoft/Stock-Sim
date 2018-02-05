@@ -25,6 +25,8 @@ import java.util.List;
 
 public class StockViewController
 {
+	private static final int PRICE_CHART_COUNT = 20;
+
 	@FXML
 	public Label stockSymbolLabel;
 	@FXML
@@ -174,14 +176,18 @@ public class StockViewController
 		final List<XYChart.Series<Long, Long>> data = this.stockPriceChart.getData();
 		final XYChart.Series<Long, Long> series = data.get(0);
 		final List<XYChart.Data<Long, Long>> seriesData = series.getData();
-
-		seriesData.clear();
-
-		for (int i = 0; i <= 10; i++)
+		while (seriesData.size() <= PRICE_CHART_COUNT)
 		{
-			final long time = startTime + (endTime - startTime) / 10 * i;
+			seriesData.add(new XYChart.Data<>());
+		}
+
+		for (int i = 0; i <= PRICE_CHART_COUNT; i++)
+		{
+			final long time = startTime + (endTime - startTime) / PRICE_CHART_COUNT * i;
 			final long price = this.stock.getPrice(time);
-			seriesData.add(new XYChart.Data<>(time, price));
+			final XYChart.Data<Long, Long> e = seriesData.get(i);
+			e.setXValue(time);
+			e.setYValue(price);
 		}
 	}
 }
