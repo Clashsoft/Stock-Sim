@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class BackgroundThread extends Thread
 {
-	private static final File DATA_DIR      = new File("data");
+	private static final File DATA_FILE     = new File("data.zip");
 	private static final int  SAVE_INTERVAL = 10;
 
 	private final LocalStockSim      stockSim;
@@ -56,7 +56,7 @@ public class BackgroundThread extends Thread
 	{
 		try
 		{
-			this.stockSim.load(DATA_DIR);
+			this.stockSim.load(DATA_FILE);
 		}
 		catch (IOException ex)
 		{
@@ -71,7 +71,7 @@ public class BackgroundThread extends Thread
 		{
 			System.out.println("Saving...");
 			long start = System.currentTimeMillis();
-			this.stockSim.save(DATA_DIR);
+			this.stockSim.save(DATA_FILE);
 			long end = System.currentTimeMillis();
 			System.out.println("Done. (" + (end - start) + " ms)");
 		}

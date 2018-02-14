@@ -2,6 +2,7 @@ package com.clashsoft.stocksim.persistence;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.zip.ZipFile;
 
 public class Util
 {
@@ -16,6 +17,14 @@ public class Util
 		long most = input.readLong();
 		long least = input.readLong();
 		return new UUID(most, least);
+	}
+
+	public static void dataInput(ZipFile zipFile, String file, DataInputReader consumer) throws IOException
+	{
+		try (DataInputStream dataInput = new DataInputStream(zipFile.getInputStream(zipFile.getEntry(file))))
+		{
+			consumer.read(dataInput);
+		}
 	}
 
 	public static void dataInput(File file, DataInputReader consumer) throws IOException

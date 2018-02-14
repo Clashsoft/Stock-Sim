@@ -9,8 +9,7 @@ import com.clashsoft.stocksim.model.StockSim;
 import com.clashsoft.stocksim.strategy.CompanyStrategy;
 import com.clashsoft.stocksim.strategy.PlayerStrategy;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,9 +20,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import static com.clashsoft.stocksim.persistence.Util.dataInput;
-import static com.clashsoft.stocksim.persistence.Util.dataOutput;
 
 public class LocalStockSim implements StockSim
 {
@@ -381,25 +382,13 @@ public class LocalStockSim implements StockSim
 	public void load(File data) throws IOException
 	{
 		this.writeLock.lock();
-		try
+		try (ZipFile zipFile = new ZipFile(data))
 		{
-			this.time = 0;
-			this.players.clear();
-			this.stocks.clear();
-			this.transactions.clear();
-			this.openOrders.clear();
-
-			final File sim = new File(data, "sim.dat");
-			final File players = new File(data, "players.dat");
-			final File stocks = new File(data, "stocks.dat");
-			final File transactions = new File(data, "transactions.dat");
-			final File openOrders = new File(data, "open_orders.dat");
-
-			dataInput(sim, input -> {
+			dataInput(zipFile, "sim.dat", input -> {
 				this.time = input.readLong();
 			});
 
-			dataInput(players, input -> {
+			dataInput(zipFile, "players.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -407,7 +396,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(stocks, input -> {
+			dataInput(zipFile, "stocks.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -415,7 +404,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(transactions, input -> {
+			dataInput(zipFile, "transactions.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -423,7 +412,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(openOrders, input -> {
+			dataInput(zipFile, "open_orders.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -440,51 +429,46 @@ public class LocalStockSim implements StockSim
 	public void save(File data) throws IOException
 	{
 		this.readLock.lock();
-		try
+
+		try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(data)));
+		     DataOutputStream output = new DataOutputStream(zip))
 		{
-			data.mkdirs();
+			zip.putNextEntry(new ZipEntry("sim.dat"));
 
-			final File sim = new File(data, "sim.dat");
-			final File players = new File(data, "players.dat");
-			final File stocks = new File(data, "stocks.dat");
-			final File transactions = new File(data, "transactions.dat");
-			final File openOrders = new File(data, "open_orders.dat");
+			output.writeLong(this.time);
 
-			dataOutput(sim, output -> {
-				output.writeLong(this.time);
-			});
+			zip.putNextEntry(new ZipEntry("players.dat"));
 
-			dataOutput(players, output -> {
-				output.writeInt(this.players.size());
-				for (Player player : this.players)
-				{
-					((LocalPlayer) player).write(output);
-				}
-			});
+			output.writeInt(this.players.size());
+			for (Player player : this.players)
+			{
+				((LocalPlayer) player).write(output);
+			}
 
-			dataOutput(stocks, output -> {
-				output.writeInt(this.stocks.size());
-				for (Stock stock : this.stocks)
-				{
-					((LocalStock) stock).write(output);
-				}
-			});
+			zip.putNextEntry(new ZipEntry("stocks.dat"));
 
-			dataOutput(transactions, output -> {
-				output.writeInt(this.transactions.size());
-				for (Transaction trx : this.transactions)
-				{
-					trx.write(output);
-				}
-			});
+			output.writeInt(this.stocks.size());
+			for (Stock stock : this.stocks)
+			{
+				((LocalStock) stock).write(output);
+			}
 
-			dataOutput(openOrders, output -> {
-				output.writeInt(this.openOrders.size());
-				for (Order order : this.openOrders)
-				{
-					order.write(output);
-				}
-			});
+			zip.putNextEntry(new ZipEntry("transactions.dat"));
+
+			output.writeInt(this.transactions.size());
+			for (Transaction trx : this.transactions)
+			{
+				trx.write(output);
+			}
+
+			zip.putNextEntry(new ZipEntry("open_orders.dat"));
+			output.writeInt(this.openOrders.size());
+			for (Order order : this.openOrders)
+			{
+				order.write(output);
+			}
+
+			zip.closeEntry();
 		}
 		finally
 		{
