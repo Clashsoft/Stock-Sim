@@ -1,5 +1,6 @@
 package com.clashsoft.stocksim.local;
 
+import com.clashsoft.fxcommons.data.ZipIO;
 import com.clashsoft.stocksim.data.Order;
 import com.clashsoft.stocksim.data.Transaction;
 import com.clashsoft.stocksim.model.Leaderboard;
@@ -23,8 +24,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
-import static com.clashsoft.stocksim.persistence.Util.dataInput;
 
 public class LocalStockSim implements StockSim
 {
@@ -384,11 +383,11 @@ public class LocalStockSim implements StockSim
 		this.writeLock.lock();
 		try (ZipFile zipFile = new ZipFile(data))
 		{
-			dataInput(zipFile, "sim.dat", input -> {
+			ZipIO.readData(zipFile, "sim.dat", input -> {
 				this.time = input.readLong();
 			});
 
-			dataInput(zipFile, "players.dat", input -> {
+			ZipIO.readData(zipFile, "players.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -396,7 +395,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(zipFile, "stocks.dat", input -> {
+			ZipIO.readData(zipFile, "stocks.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -404,7 +403,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(zipFile, "transactions.dat", input -> {
+			ZipIO.readData(zipFile, "transactions.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{
@@ -412,7 +411,7 @@ public class LocalStockSim implements StockSim
 				}
 			});
 
-			dataInput(zipFile, "open_orders.dat", input -> {
+			ZipIO.readData(zipFile, "open_orders.dat", input -> {
 				final int n = input.readInt();
 				for (int i = 0; i < n; i++)
 				{

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.clashsoft.stocksim.persistence.Util.readUUID;
-import static com.clashsoft.stocksim.persistence.Util.writeUUID;
+import static com.clashsoft.fxcommons.data.DataIO.readUUID;
+import static com.clashsoft.fxcommons.data.DataIO.writeUUID;
 
 public class LocalPlayer implements Player
 {

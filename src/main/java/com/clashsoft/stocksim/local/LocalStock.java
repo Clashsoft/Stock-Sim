@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.clashsoft.stocksim.persistence.Util.readUUID;
-import static com.clashsoft.stocksim.persistence.Util.writeUUID;
+import static com.clashsoft.fxcommons.data.DataIO.readUUID;
+import static com.clashsoft.fxcommons.data.DataIO.writeUUID;
 
 public class LocalStock implements Stock
 {
