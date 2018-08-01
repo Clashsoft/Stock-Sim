@@ -1,111 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.PlayerViewController">
-	<children>
+<?import javafx.geometry.*?><?import javafx.scene.chart.LineChart?><?import javafx.scene.chart.NumberAxis?><?import javafx.scene.chart.PieChart?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import javafx.scene.text.*?>
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0" prefWidth="600.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.121"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.clashsoft.stocksim.ui.PlayerViewController">
+	<padding>
+		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+	</padding>
+	<HBox alignment="CENTER" prefHeight="30.0">
 		<Label fx:id="playerNameLabel" text="Player Name">
 			<font>
-				<Font size="18.0" />
+				<Font size="18.0"/>
 			</font>
 		</Label>
-		<Separator prefWidth="200.0" />
-		<HBox alignment="BOTTOM_CENTER" spacing="2.0">
-			<children>
-				<Label fx:id="netWorthDollarLabel" text="\$ 1,000,000">
-					<font>
-						<Font size="24.0" />
-					</font>
-				</Label>
-				<Label fx:id="netWorthCentLabel" text=".00">
-					<font>
-						<Font size="18.0" />
-					</font>
-				</Label>
-			</children>
-			<VBox.margin>
-				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-			</VBox.margin>
-		</HBox>
-		<HBox alignment="BOTTOM_CENTER" spacing="2.0">
-			<children>
-				<Label fx:id="absChangeLabel" text="+ $ 20,000.00">
-					<font>
-						<Font size="18.0" />
-					</font>
-				</Label>
-				<Separator orientation="VERTICAL" />
-				<Label fx:id="relChangeLabel" text="+ 2.00 %">
-					<font>
-						<Font size="18.0" />
-					</font>
-				</Label>
-			</children>
-			<VBox.margin>
-				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-			</VBox.margin>
-		</HBox>
-		<HBox alignment="BOTTOM_CENTER" spacing="2.0">
-			<children>
-				<Label fx:id="leaderboardPositionLabel" text="#12">
-					<font>
-						<Font size="24.0" />
-					</font>
-				</Label>
-				<Separator orientation="VERTICAL" />
-				<Label fx:id="leaderboardChangeLabel" text="▲ 10">
-					<font>
-						<Font size="18.0" />
-					</font>
-				</Label>
-			</children>
-			<VBox.margin>
-				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-			</VBox.margin>
-		</HBox>
-		<HBox alignment="CENTER">
-			<children>
-				<Label text="Statistics for: " />
-				<ToggleButton fx:id="hourToggleButton" selected="true" text="One Hour">
-					<toggleGroup>
-						<ToggleGroup fx:id="periodToggle" />
-					</toggleGroup>
-				</ToggleButton>
-				<ToggleButton fx:id="dayToggleButton" text="One Day" toggleGroup="$periodToggle" />
-				<ToggleButton fx:id="monthToggleButton" text="One Month" toggleGroup="$periodToggle" />
-				<ToggleButton fx:id="yearToggleButton" text="One Year" toggleGroup="$periodToggle" />
-				<ToggleButton fx:id="allTimeToggleButton" mnemonicParsing="false" text="All Time" toggleGroup="$periodToggle" />
-			</children>
-			<VBox.margin>
-				<Insets top="5.0" />
-			</VBox.margin>
-		</HBox>
-		<Separator prefWidth="200.0" />
-		<HBox VBox.vgrow="ALWAYS">
-			<children>
-				<LineChart fx:id="netWorthChart" legendSide="RIGHT" legendVisible="false" title="Net Worth" HBox.hgrow="ALWAYS">
-					<xAxis>
-						<NumberAxis forceZeroInRange="false" side="BOTTOM" />
-					</xAxis>
-					<yAxis>
-						<NumberAxis forceZeroInRange="false" side="LEFT" />
-					</yAxis>
-				</LineChart>
-				<PieChart fx:id="portfolioChart" title="Portfolio" HBox.hgrow="ALWAYS" />
-			</children>
-		</HBox>
-	</children>
-	<padding>
-		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-	</padding>
+	</HBox>
+	<Separator prefWidth="200.0"/>
+	<HBox alignment="BOTTOM_CENTER" spacing="2.0">
+		<VBox.margin>
+			<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+		</VBox.margin>
+		<Label fx:id="netWorthDollarLabel" text="\$ 1,000,000">
+			<font>
+				<Font size="24.0"/>
+			</font>
+		</Label>
+		<Label fx:id="netWorthCentLabel" text=".00">
+			<font>
+				<Font size="18.0"/>
+			</font>
+		</Label>
+	</HBox>
+	<HBox alignment="BOTTOM_CENTER" spacing="2.0">
+		<VBox.margin>
+			<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+		</VBox.margin>
+		<Label fx:id="absChangeLabel" text="+ $ 20,000.00">
+			<font>
+				<Font size="18.0"/>
+			</font>
+		</Label>
+		<Separator orientation="VERTICAL"/>
+		<Label fx:id="relChangeLabel" text="+ 2.00 %">
+			<font>
+				<Font size="18.0"/>
+			</font>
+		</Label>
+	</HBox>
+	<HBox alignment="BOTTOM_CENTER" spacing="2.0">
+		<VBox.margin>
+			<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+		</VBox.margin>
+		<Label fx:id="leaderboardPositionLabel" text="#12">
+			<font>
+				<Font size="24.0"/>
+			</font>
+		</Label>
+		<Separator orientation="VERTICAL"/>
+		<Label fx:id="leaderboardChangeLabel" text="▲ 10">
+			<font>
+				<Font size="18.0"/>
+			</font>
+		</Label>
+	</HBox>
+	<HBox alignment="CENTER">
+		<VBox.margin>
+			<Insets top="5.0"/>
+		</VBox.margin>
+		<Label text="Statistics for: "/>
+		<ToggleButton fx:id="hourToggleButton" selected="true" text="One Hour">
+			<toggleGroup>
+				<ToggleGroup fx:id="periodToggle"/>
+			</toggleGroup>
+		</ToggleButton>
+		<ToggleButton fx:id="dayToggleButton" text="One Day" toggleGroup="$periodToggle"/>
+		<ToggleButton fx:id="monthToggleButton" text="One Month" toggleGroup="$periodToggle"/>
+		<ToggleButton fx:id="yearToggleButton" text="One Year" toggleGroup="$periodToggle"/>
+		<ToggleButton fx:id="allTimeToggleButton" mnemonicParsing="false" text="All Time" toggleGroup="$periodToggle"/>
+	</HBox>
+	<Separator prefWidth="200.0"/>
+	<HBox VBox.vgrow="ALWAYS">
+		<LineChart fx:id="netWorthChart" legendSide="RIGHT" legendVisible="false" title="Net Worth" HBox.hgrow="ALWAYS">
+			<xAxis>
+				<NumberAxis forceZeroInRange="false" side="BOTTOM"/>
+			</xAxis>
+			<yAxis>
+				<NumberAxis forceZeroInRange="false" side="LEFT"/>
+			</yAxis>
+		</LineChart>
+		<PieChart fx:id="portfolioChart" title="Portfolio" HBox.hgrow="ALWAYS"/>
+	</HBox>
 </VBox>
