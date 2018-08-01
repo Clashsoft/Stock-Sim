@@ -132,12 +132,12 @@ public class PlayerStrategy implements Strategy
 
 	private long getPriceChange(Stock stock)
 	{
-		return stock.getPrice() - stock.getPrice(stock.getStockSim().getTime() - 1);
+		return stock.getPrice() - stock.getPrice(stock.getStockSim().getTime() - Period.MINUTE.length);
 	}
 
-	protected <T> T random(List<T> stockAmounts)
+	protected <T> T random(List<T> list)
 	{
-		return stockAmounts.get(this.random.nextInt(stockAmounts.size()));
+		return list.get(this.random.nextInt(list.size()));
 	}
 
 	// Persistence
